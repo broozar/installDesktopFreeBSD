@@ -7,7 +7,7 @@ This script helps you set up a desktop system on top of FreeBSD 10/11. It will i
 ## Usage
 1. Install FreeBSD, but do not create any additional users
 2. Copy the installDesktop.sh script onto a USB flash drive and stick it into your freshly installed FreeBSD machine
-3. Log in as root, mount the stick and execute the script. This could look something linke this (replace locations appropriately):
+3. Log in as root, mount the stick and execute the script. This could look something link this (replace locations appropriately):
 ```
 $ mount_msdosfs /dev/da0s1 /mnt
 $ /mnt/installDesktop.sh
