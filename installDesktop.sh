@@ -3,7 +3,7 @@
 # Dektop jumpstarter for FreeBSD 10/11
 # by Felix Caffier
 # http://www.trisymphony.com
-# revision 2018-01-01
+# revision 2018-01-12
 
 
 # ------------------------------------ Notes
@@ -21,14 +21,15 @@
 # ------------------------------------ globals & setup
 
 # control vars and strings
-INST_PKG=1
-INST_XORG=0
+INST_PKG=1 # assume a fresh install
+FBSD_UPD=1 # fetch security patches by default
+INST_XORG=1 # needed for every desktop
 INST_XFCE=0
 INST_GNOME=0
 INST_CINNAMON=0
-INST_KDE=0
+INST_KDE=0 # possible conflict with VLC
 INST_Office=0
-INST_VLC=0
+INST_VLC=0 # possible conflict with KDE
 INST_Firefox=0
 INST_Chromium=0
 INST_CodeBlocks=0
@@ -49,8 +50,11 @@ echo -e "${CYAN}FreeBSD Desktop installer for FreeBSD 10/11
 by Felix Caffier (http://www.trisymphony.com)${NC}
 
 This script will install PKG, X, a Desktop Environment of your choice,
-some optional Desktop software and set up a 'wheel/video' user, but
+some optional Desktop software and set up a 'wheel video' user, but
 it will ${YELLOW}not${NC} install nvidia/amd/... graphics drivers!
+
+If you made a mistake answering the questions, you can quit out 
+of the installer by pressing ${CYAN}CTRL+C${NC} and then start again.
 "
 
 
@@ -75,7 +79,7 @@ echo -e "[ ${GREEN}INFO${NC} ]  Processor architecture: $MY_ARCH"
 # look for PKG
 case "$(/usr/sbin/pkg -N 2>&1)" in
 	*" not "*) 
-		echo -e "[ ${GREEN}INFO${NC} ]  PKG needs to be bootstrapped" 
+		echo -e "[ ${GREEN}INFO${NC} ]  PKG will be bootstrapped" 
 		INST_PKG=1
 		;;
 	*) 
@@ -84,20 +88,42 @@ case "$(/usr/sbin/pkg -N 2>&1)" in
 		;;
 esac
 
-# continue
-echo -e "[ ${GREEN}INFO${NC} ]  Proceeding with regular installation...
-"
+# command line overrides
+while getopts ":xu" opt; do
+	case $opt in
+		x)
+			INST_XORG=0
+			echo -e "[ ${YELLOW}NOTE${NC} ]  -x: Xorg will not be installed!"
+			;;
+		u)
+			FBSD_UPD=0
+			echo -e "[ ${YELLOW}NOTE${NC} ]  -u: Skipping FreeBSD security patches!"
+			;;
+	esac
+done
+
+# network connection check
+if nc -zw1 8.8.8.8 443 > /dev/null 2>&1 ; then
+	echo -e "[ ${GREEN}INFO${NC} ]  Internet connection verified"
+	echo -e "[ ${GREEN}INFO${NC} ]  Proceeding with regular installation...
+	"
+else
+	echo -e "[ ${YELLOW}NOTE${NC} ]  Could not verify internet connection!"
+	echo -e "[ ${YELLOW}NOTE${NC} ]  You must be online for this script to work!"
+	echo -e "[ ${YELLOW}NOTE${NC} ]  Proceed with caution...
+	"
+fi
 
 
 # ------------------------------------ questions
 
-# ask INST_XORG
-read -p "Install XORG (required for any Desktop)? [y/N] " response
-if echo "$response" | grep -iq "^y" ; then
-	INST_XORG=1
-else
-	echo -e "[ ${YELLOW}NOTE${NC} ]  Skipping XORG. Desktops might not work!"
-fi
+# INST_XORG - default 1, set script argument -x to skip
+# read -p "Install XORG (required for any Desktop)? [y/N] " response
+# if echo "$response" | grep -iq "^y" ; then
+# 	INST_XORG=1
+# else
+# 	echo -e "[ ${YELLOW}NOTE${NC} ]  Skipping XORG. Desktops might not work!"
+# fi
 
 # ask INST_XFCE
 read -p "Install XFCE as main Desktop? [y/N] " response
@@ -128,12 +154,14 @@ else
 	fi
 fi
 
-# ask INST_VLC
-read -p "Install VLC media player (video & audio)? [y/N] " response
-if echo "$response" | grep -iq "^y" ; then
-	INST_VLC=1
-else
-	INST_VLC=0
+# ask INST_VLC, but only if KDE is not selected
+if [ "$INST_KDE" -eq 0 ] ; then
+	read -p "Install VLC media player (video & audio)? [y/N] " response
+	if echo "$response" | grep -iq "^y" ; then
+		INST_VLC=1
+	else
+		INST_VLC=0
+	fi
 fi
 
 # ask INST_Firefox
@@ -194,9 +222,9 @@ fi
 
 # ------------------------------------ user account creation
 
-echo -e "[ ${GREEN}INFO${NC} ]  Creating new user account. Please follow the
-instructions on screen, and remember to add yourself to the ${YELLOW}wheel${NC}
-and ${YELLOW}video${NC} groups and give yourself a proper ${YELLOW}password${NC}!
+echo -e "[ ${GREEN}INFO${NC} ]  Creating new user account. Please follow the instructions
+on screen, and remember to add yourself to the '${YELLOW}wheel video${NC}'
+groups and give yourself a proper ${YELLOW}password${NC}!
 "
 
 if adduser ; then
@@ -209,6 +237,16 @@ fi
 
 
 # ------------------------------------ INSTALLATION
+
+# security patches
+if [ "$FBSD_UPD" -eq 1 ] ; then
+	echo -e "[ ${GREEN}NOTE${NC} ]  Applying latest FreeBSD security patches
+	"
+	freebsd-update fetch install
+	echo ""
+else
+	echo -e "[ ${YELLOW}NOTE${NC} ]  Skipping FreeBSD security patches"
+fi
 
 # PKG
 if [ "$INST_PKG" -eq 1 ] ; then
@@ -232,9 +270,9 @@ fi
 if [ "$INST_XORG" -eq 1 ] ; then
 	echo -e "[ ${GREEN}NOTE${NC} ]  Installing XORG
 	"
-	echo "y" | pkg install xorg
+	pkg install -y xorg
 	echo ""
-	echo "y" | pkg install urwfonts
+	pkg install -y urwfonts
 	echo ""
 	
 fi
@@ -243,9 +281,9 @@ fi
 if [ "$INST_XFCE" -eq 1 ] ; then
 	echo -e "[ ${GREEN}NOTE${NC} ]  Installing XFCE
 	"
-	echo "y" | pkg install xfce
+	pkg install -y xfce
 	echo ""
-	echo "y" | pkg install gdm
+	pkg install -y gdm
 	echo "
 # ---- installDesktop script: XFCE installation
 proc		/proc	procfs	rw	0	0" >> "/etc/fstab"
@@ -261,9 +299,9 @@ fi
 if [ "$INST_GNOME" -eq 1 ] ; then
 	echo -e "[ ${GREEN}NOTE${NC} ]  Installing GNOME"
 	echo ""
-	echo "y" | pkg install gnome3
+	pkg install -y gnome3
 	echo ""
-	echo "y" | pkg install gnome-tweak-tool
+	pkg install -y gnome-tweak-tool
 	echo "
 # ---- installDesktop script: GNOME installation
 proc		/proc	procfs	rw	0	0" >> "/etc/fstab"
@@ -280,9 +318,9 @@ fi
 if [ "$INST_CINNAMON" -eq 1 ] ; then
 	echo -e "[ ${GREEN}NOTE${NC} ]  Installing Cinnamon"
 	echo ""
-	echo "y" | pkg install cinnamon
+	pkg install -y cinnamon
 	echo ""
-	echo "y" | pkg install gdm
+	pkg install -y gdm
 	echo "
 # ---- installDesktop script: Cinnamon installation
 proc		/proc	procfs	rw	0	0" >> "/etc/fstab"
@@ -299,7 +337,7 @@ fi
 if [ "$INST_KDE" -eq 1 ] ; then
 	echo -e "[ ${GREEN}NOTE${NC} ]  Installing KDE"
 	echo ""
-	echo "y" | pkg install kde
+	pkg install -y kde
 	echo "
 # ---- installDesktop script: KDE installation
 proc		/proc	procfs	rw	0	0" >> "/etc/fstab"
@@ -315,7 +353,7 @@ fi
 if [ "$INST_Firefox" -eq 1 ] ; then
 	echo -e "[ ${GREEN}NOTE${NC} ]  Installing Firefox Browser
 	"
-	echo "y" | pkg install firefox
+	pkg install -y firefox
 	echo ""
 fi
 
@@ -323,7 +361,7 @@ fi
 if [ "$INST_Chromium" -eq 1 ] ; then
 	echo -e "[ ${GREEN}NOTE${NC} ]  Installing Chromium Browser
 	"
-	echo "y" | pkg install chromium
+	pkg install -y chromium
 	echo "
 # ---- installDesktop script: Chromium browser
 kern.ipc.shm_allow_removed=1" >> "/etc/sysctl.conf"
@@ -331,10 +369,10 @@ kern.ipc.shm_allow_removed=1" >> "/etc/sysctl.conf"
 fi
 
 # VLC
-if [ "$INST_VLC" -eq 1 ] ; then
+if [ "$INST_VLC" -eq 1 ] && [ "$INST_KDE" -eq 0 ] ; then
 	echo -e "[ ${GREEN}NOTE${NC} ]  Installing VLC Media Player
 	"
-	echo "y" | pkg install vlc
+	pkg install -y vlc
 	echo ""
 fi
 
@@ -342,7 +380,7 @@ fi
 if [ "$INST_Office" -eq 1 ] ; then
 	echo -e "[ ${GREEN}NOTE${NC} ]  Installing LibreOffice
 	"
-	echo "y" | pkg install libreoffice
+	pkg install -y libreoffice
 	echo ""
 fi
 
@@ -350,7 +388,7 @@ fi
 if [ "$INST_CodeBlocks" -eq 1 ] ; then
 	echo -e "[ ${GREEN}NOTE${NC} ]  Installing CodeBlocks IDE
 	"
-	echo "y" | pkg install codeblocks
+	pkg install -y codeblocks
 	echo ""
 fi
 
@@ -368,7 +406,7 @@ if [ "$INST_Linux" -eq 1 ] ; then
 			;;
 	esac
 	echo ""
-	echo "y" | pkg install linux-c7
+	pkg install -y linux-c7
 	echo "
 # ---- installDesktop script: LINUX compat
 linux_enable=\"YES\"" >> "/etc/rc.conf"
@@ -381,19 +419,19 @@ fi
 echo -e "[ ${GREEN}NOTE${NC} ]  Installing additional CLI tools
 
 ----- NANO"
-echo "y" | pkg install nano
+pkg install -y nano
 echo "
 ----- VIM"
-echo "y" | pkg install vim
+pkg install -y vim
 echo "
 ----- UNAR"
-echo "y" | pkg install unar
+pkg install -y unar
 echo "
 ----- SYSINFO"
-echo "y" | pkg install sysinfo
+pkg install -y sysinfo
 echo "
 ----- HTOP"
-echo "y" | pkg install htop
+pkg install -y htop
 echo ""
 
 
