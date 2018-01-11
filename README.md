@@ -17,18 +17,18 @@ $ /mnt/installDesktop.sh
 ## Advanced options
 You can launch the script with additional parmeters:
 
--x skips the Xorg installation
+-x skips the Xorg installation<br />
 -u skips freebsd-update
 
 ## Known issues
-GNOME seems to work (and look) best - recommended desktop
-KDE untested, because KDE4 is so old now
-CINNAMON produces only a black screen... help?
+GNOME seems to work (and look) best - recommended desktop<br />
+KDE untested, because KDE4 is so old now<br />
+CINNAMON produces only a black screen... help?<br />
 
 Code::Blocks install is currently borked in 11.1 (startup crash), so you probably need to manually install it from ports
 
 No graphics driver installation, this has to be done manually.
 
 ## Changelog
-2018-01-11: added -x -u parameters, fixes for KDE/VLC, new network check, Xorg installed by default, echo -y removed, added freebsd-update
+2018-01-11: added -x -u parameters, fixes for KDE/VLC, new network check, Xorg installed by default, echo -y removed, added freebsd-update<br />
 2018-01-02: Initial release
