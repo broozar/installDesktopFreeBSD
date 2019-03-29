@@ -31,12 +31,17 @@ No graphics driver installation, this has to be done manually.
 ## Differences to previous versions
 Unlike the old installDesktop.sh, DarkMate will not give you any choice in the Desktop Environment you are going to install, and rather focus on giving you a single, streamlined desktop experience using MATE and custom theming.
 
+The -u startup parameter now forces freebsd-update rather than disabling it.
+
 ## Screenshots
 
+Clean desktop:
 ![PIC Desktop](Screenshots/dm12-desktop.png)
 
+Brisk menu and Mate-Terminal:
 ![PIC Desktop](Screenshots/dm12-terminal.png)
 
+SLiM theme:
 ![PIC Desktop](Screenshots/slim-freebsd.png)
 
 ## Credits
@@ -45,6 +50,6 @@ Unlike the old installDesktop.sh, DarkMate will not give you any choice in the D
 - desktop theming tips by olivierd https://forums.freebsd.org/threads/gschema-override-not-holding.69973/#post-422183
 
 ## Changelog
-2019-03-29: first DarkMate release, switch to FreeBSD 12
-2018-01-11: added -x -u parameters, fixes for KDE/VLC, new network check, Xorg installed by default, echo -y removed, added freebsd-update<br />
-2018-01-02: Initial release for FreeBSD 10/11
+- 2019-03-29: first DarkMate release, switch to FreeBSD 12
+- 2018-01-11: added -x -u parameters, fixes for KDE/VLC, new network check, Xorg installed by default, echo -y removed, added freebsd-update<br />
+- 2018-01-02: Initial release for FreeBSD 10/11
