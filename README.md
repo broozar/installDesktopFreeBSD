@@ -28,6 +28,8 @@ The layout can be changed later at any point. For MATE, simply navigate to the K
 ## Known issues
 No graphics driver installation, this has to be done manually.
 
+SLiM Theme is designed for 1080p. If you have a smaller resolution or run in a VM, the login screen might not be centered, but still usable.
+
 ## Differences to previous versions
 Unlike the old installDesktop.sh, DarkMate will not give you any choice in the Desktop Environment you are going to install, and rather focus on giving you a single, streamlined desktop experience using MATE and custom theming.
 
