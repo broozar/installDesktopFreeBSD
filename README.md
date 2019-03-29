@@ -26,9 +26,9 @@ The script will ask you to define your keyboard layout. If you go with the defau
 The layout can be changed later at any point. For MATE, simply navigate to the Keyboard Settings. For SLiM, edit the file **/etc/X11/xorg.conf.d/10-keyboard.conf**
 
 ## Known issues
-No graphics driver installation, this has to be done manually.
-
-SLiM Theme is designed for 1080p. If you have a smaller resolution or run in a VM, the login screen might not be centered, but still usable.
+- No graphics driver installation, this has to be done manually.
+- SLiM Theme is designed for 1080p. If you have a smaller resolution or run in a VM, the login screen might not be centered, but is still usable.
+- Keyboard layouts and variants are not checked for validity.
 
 ## Differences to previous versions
 Unlike the old installDesktop.sh, DarkMate will not give you any choice in the Desktop Environment you are going to install, and rather focus on giving you a single, streamlined desktop experience using MATE and custom theming.
