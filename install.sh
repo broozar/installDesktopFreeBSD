@@ -3,7 +3,7 @@
 # DarkMate Desktop for FreeBSD 12.0
 # by Felix Caffier
 # http://www.trisymphony.com
-# revision 2019-03-10
+# revision 2019-07-04, now using SKEL
 
 
 # ------------------------------------ Notes
@@ -23,6 +23,7 @@
 
 # control vars and strings
 INST_PKG=1			# assume a fresh install
+MIRR_PKG=''			# mirrors for PKG: 0 "", 1 "eu.", 2 "us-east.", 3 "us-west."
 FBSD_UPD=0			# fetch security patches by default
 INST_XORG=1			# needed for every desktop
 INST_MATE=1			# nice desktop environment
@@ -146,6 +147,7 @@ else
 	KBD_VAR=$response
 fi
 
+
 # ------------------------------------ questions
 
 # ask INST_Firefox
@@ -237,6 +239,16 @@ else
 	INST_MUSIC=0
 fi
 
+# ask PKG mirror
+read -p "PKG Mirror: What is your location? 0:World, 1:EU, 2:US-East, 3:US-West [0] " response
+if [ "$response" -eq 1 ] ; then
+	MIRR_PKG='eu.'
+elif [ "$response" -eq 2 ] ; then
+	MIRR_PKG='us-east.'
+elif [ "$response" -eq 3 ] ; then
+	MIRR_PKG='us-west.'
+fi
+
 
 # ------------------------------------ confirmation
 
@@ -251,6 +263,32 @@ else
 	"
 	exit 5
 fi
+
+
+# ------------------------------------ making SKEL changes
+
+# creating folders
+mkdir /usr/share/skel/Documents
+mkdir /usr/share/skel/Downloads
+mkdir /usr/share/skel/Music
+mkdir /usr/share/skel/Pictures
+mkdir /usr/share/skel/Programming
+mkdir /usr/share/skel/Videos
+
+# startup mate session
+touch /usr/share/skel/dot.xinitrc
+echo "# ---- installDesktop script: MATE installation
+exec mate-session" > /usr/share/skel/dot.xinitrc
+
+# transparent separators
+mkdir -p /usr/share/skel/dot.config/gtk-3.0
+touch /usr/share/skel/dot.config/gtk-3.0/gtk.css
+echo "PanelSeparator {
+	color: transparent;
+}
+" > /usr/share/skel/dot.config/gtk-3.0/gtk.css
+
+chown -R root:wheel /usr/share/skel 
 
 
 # ------------------------------------ user account creation
@@ -293,7 +331,19 @@ else
 	echo -e "[ ${YELLOW}NOTE${NC} ]  Skipping PKG bootstrap"
 fi
 
-if pkg update ; then
+mkdir -p /usr/local/etc/pkg/repos
+touch /usr/local/etc/pkg/repos/FreeBSD.conf
+
+echo 'FreeBSD: {
+  url: "pkg+http://pkg.FreeBSD.org/${ABI}/latest",
+  mirror_type: "srv",
+  enabled: yes
+}' > /usr/local/etc/pkg/repos/FreeBSD.conf
+
+sed -i ".bak" "s/pkg.FreeBSD.org/pkg.${MIRR_PKG}FreeBSD.org/" /usr/local/etc/pkg/repos/FreeBSD.conf
+rm /usr/local/etc/pkg/repos/FreeBSD.conf.bak
+
+if pkg update -f ; then
 	echo "" # pkg was updated, we can continue
 else
 	echo -e "[ ${RED}ERROR${NC} ]  PKG update failed
@@ -431,26 +481,6 @@ slim_enable=\"YES\"" >> /etc/rc.conf
 	"
 	wget -qO- https://raw.githubusercontent.com/PapirusDevelopmentTeam/papirus-icon-theme/master/install.sh | env DESTDIR="/usr/local/share/icons" sh
 	echo ""
-	
-	# make user-specific changes
-	cd /home
-	for FILE in *
-	do
-		# .xinitrc - start MATE
-		su -m $FILE -c "touch /home/$FILE/.xinitrc"
-		chmod 775 /home/$FILE/.xinitrc
-		echo "# ---- installDesktop script: MATE installation
-exec mate-session" >> /home/$FILE/.xinitrc
-		# transparent separators
-		su -m $FILE -c "mkdir -p /home/$FILE/.config/gtk-3.0"
-		chmod 775 /home/$FILE/.config/gtk-3.0
-		su -m $FILE -c "touch /home/$FILE/.config/gtk-3.0/gtk.css"
-		chmod 775 /home/$FILE/.config/gtk-3.0/gtk.css
-		echo "PanelSeparator {
-	color: transparent;
-}
-" > /home/$FILE/.config/gtk-3.0/gtk.css
-	done
 	
 	# create a theme override file
 	mkdir -p /usr/local/etc/dconf/profile
@@ -755,6 +785,11 @@ fi
 
 
 # ------------------------------------ finalizing
+
+echo -e "[ ${GREEN}NOTE${NC} ]  Time for a final update check!
+"
+pkg upgrade
+echo ""
 
 echo -e "[ ${YELLOW}NOTE${NC} ]  Installation complete. Please restart your system!
 Either type ${CYAN}shutdown -r now${NC} to reboot now, or reboot later and 
