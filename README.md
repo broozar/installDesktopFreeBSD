@@ -6,11 +6,13 @@ This script helps you set up a desktop system on top of FreeBSD 12. It will inst
 
 ## Usage
 1. Install a minimal image of FreeBSD 12, but do not create any additional users.
-2. Copy the **install.sh** script onto a USB flash drive and stick it into your freshly installed FreeBSD machine.
-3. Log in as root, mount the stick and execute the script. This could look something link this (replace locations appropriately):
+2. Boot your new FreeBSD system and log in as root.
+3. Navigate to yout TMP directory, fetch the install script from GitHub, and run it:
 ```
-$ mount_msdosfs /dev/da0s1 /mnt
-$ sh /mnt/install.sh
+$ cd /tmp
+$ fetch --no-verify-peer https://raw.githubusercontent.com/broozar/installDesktopFreeBSD/DarkMate12/install.sh
+$ chmod +x install.sh
+$ ./install.sh
 ```
 4. Follow the instructions on screen. If you made a mistake, use CTRL+C to abort, then simply run the script again.
 
@@ -50,6 +52,10 @@ SLiM theme:
 - icon theme is PAPIRUS https://github.com/PapirusDevelopmentTeam/papirus-icon-theme
 - SLIM theme by ross http://daemon-notes.com/articles/desktop/slim
 - desktop theming tips by olivierd https://forums.freebsd.org/threads/gschema-override-not-holding.69973/#post-422183
+
+## YouTube tutorial (click image to play)
+
+[![Watch the video](https://img.youtube.com/vi/vMzE63z6yLk/maxresdefault.jpg)](https://youtu.be/vMzE63z6yLk)
 
 ## Changelog
 - 2019-03-29: first DarkMate release, switch to FreeBSD 12
