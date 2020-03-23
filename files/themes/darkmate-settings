@@ -64,8 +64,7 @@ delay=3
 numlock-state='on'
 
 [desktop/peripherals/keyboard/kbd]
-#####KBD-LAYOUT
-#####KBD-VARIANT
+#####KBD
 
 [desktop/peripherals/mouse]
 cursor-size=24
