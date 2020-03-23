@@ -43,10 +43,6 @@ The layout can be changed later at any point. For MATE, simply navigate to the K
 ### Alternative red wallpaper
 ![PIC Desktop](Screenshots/dm121c.png)
 
-## Credits
-- icon theme is PAPIRUS https://github.com/PapirusDevelopmentTeam/papirus-icon-theme
-- desktop theming guide by olivierd https://forums.freebsd.org/threads/gschema-override-not-holding.69973/#post-422183
-
 ## YouTube tutorial (click image to play)
 
 [![Watch the video](https://img.youtube.com/vi/vMzE63z6yLk/maxresdefault.jpg)](https://youtu.be/vMzE63z6yLk)
@@ -56,3 +52,7 @@ The layout can be changed later at any point. For MATE, simply navigate to the K
 - 2019-03-29: first DarkMate release, switch to FreeBSD 12
 - 2018-01-11: added -x -u parameters, fixes for KDE/VLC, new network check, Xorg installed by default, echo -y removed, added freebsd-update<br />
 - 2018-01-02: Initial release for FreeBSD 10/11
+
+## Credits
+- icon theme is PAPIRUS https://github.com/PapirusDevelopmentTeam/papirus-icon-theme
+- desktop theming guide by olivierd https://forums.freebsd.org/threads/gschema-override-not-holding.69973/#post-422183
