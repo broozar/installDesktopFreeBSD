@@ -37,8 +37,11 @@ The layout can be changed later at any point. For MATE, simply navigate to the K
 - External data like config files, screenshots etc. has been moved to separate files which will be downloaded from GitHub as needed.
 
 ## Screenshots
-
-
+### Grey theme
+![PIC Desktop](Screenshots/dm121a.png)
+![PIC Desktop](Screenshots/dm121b.png)
+### Alternative red wallpaper
+![PIC Desktop](Screenshots/dm121c.png)
 
 ## Credits
 - icon theme is PAPIRUS https://github.com/PapirusDevelopmentTeam/papirus-icon-theme
