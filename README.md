@@ -28,13 +28,29 @@ The script will ask you to define your keyboard layout. If you go with the defau
 The layout can be changed later at any point. For MATE, simply navigate to the Keyboard Settings. For SLiM, edit the file **/etc/X11/xorg.conf.d/10-keyboard.conf**
 
 ## Known issues
-- No graphics driver installation, this has to be done manually. See video below.
-- Keyboard layouts and variants are not checked for validity.
+- Keyboard layouts and variants are not checked for validity. Potential input problems with the new udev changes in FreeBSD.
 
 ## Differences to previous version
 - Version 12.1 cuts out all optional desktop software that was previously asked about in 12.0. To install software like GIMP, Blender or Audacity, please use pkg after you have rebooted the system.
-- The script code has been cleaned up and should be easier to follow. 
+- Major refactoring: The script code has been cleaned up and should be easier to follow. 
 - External data like config files, screenshots etc. has been moved to separate files which will be downloaded from GitHub as needed.
+- Experimental Nvidia driver support.
+- Even more custom theming, including SLiM.
+- New predefined keyboard shortcuts.
+- License change from MIT to GPL v3 because of the new components used.
+
+## Keyboard Shortcuts
+- SUPER+left, SUPER+right: tile windows left/right
+- SUPER+up: maximize window
+- SUPER+down: minimize window
+- SUPER+e: launch file manager
+- SUPER+t: launch terminal
+- SUPER+b: launch browser
+- SUPER+c: launch calculator
+- SUPER+m: launch mail
+
+## Wallpaper location
+The custom wallpapers can be found in */usr/local/share/backgrounds/fbsd*
 
 ## Screenshots
 ### Grey theme
