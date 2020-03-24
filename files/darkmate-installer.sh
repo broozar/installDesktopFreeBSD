@@ -290,6 +290,10 @@ s_user () {
 The installer also assumes your home folder is located in ${CYAN}/home${NC}.
 "
 
+	if [ "$INST_Office" -eq 1 ] ; then
+		groupadd cups
+	fi
+
 	if adduser ; then
 		echo ""	# continue
 	else
@@ -390,6 +394,7 @@ i_mate () {
 	cd /tmp
 	if fetch --no-verify-peer https://raw.githubusercontent.com/broozar/installDesktopFreeBSD/DarkMate12.1/files/themes/Arc-Dark-Grey.tar.xz ; then
 		tar xf Arc-Dark-Grey.tar.xz -C /usr/local/share/themes
+		chmod -R 755 /usr/local/share/themes/Arc-Dark-Grey
 		rm Arc-Dark-Grey.tar.xz
 	fi
 	echo ""
@@ -403,6 +408,7 @@ i_mate () {
 	"	
 	cd /usr/local/share/polkit-1/rules.d
 	fetch --no-verify-peer https://raw.githubusercontent.com/broozar/installDesktopFreeBSD/DarkMate12.1/files/polkit/shutdown-reboot.rules
+	chmod 755 shutdown-reboot.rules
 	cd /tmp
 	echo ""
 }
@@ -435,13 +441,11 @@ i_slim () {
 	echo "# keyboard layout for SLiM (Login Manager)
 Section \"InputClass\"
 	Identifier \"Keyboard0\"
-	Driver \"kbd\"
 	MatchIsKeyboard \"on\"
 	Option \"XkbModel\" \"pc105\"
-	Option \"XkbRules\" \"xorg\"
 	Option \"XkbLayout\" \"${KBD_LANG}\"" > /etc/X11/xorg.conf.d/10-keyboard.conf
 	if [ -z "$KBD_VAR" ] ; then 
-		echo "	#Option \"XkbVariant\" \"\"" >> /etc/X11/xorg.conf.d/10-keyboard.conf
+		echo "#	Option \"XkbVariant\" \"\"" >> /etc/X11/xorg.conf.d/10-keyboard.conf
 	else
 		echo "	Option \"XkbVariant\" \"${KBD_VAR}\"" >> /etc/X11/xorg.conf.d/10-keyboard.conf
 	fi
@@ -483,13 +487,13 @@ dbus_enable=\"YES\"" >> /etc/rc.conf
 	fi
 	
 # HALD is deprecated
-#	if grep -q hald_enable /etc/rc.conf ; then
-#		sed -i ".bak" "s/hald_enable.*/hald_enable=\"YES\"/" /etc/rc.conf
-#	else
-#		echo "
-## ---- changed by DarkMate:
-#hald_enable=\"YES\"" >> /etc/rc.conf
-#	fi
+	if grep -q hald_enable /etc/rc.conf ; then
+		sed -i ".bak" "s/hald_enable.*/hald_enable=\"YES\"/" /etc/rc.conf
+	else
+		echo "
+# ---- changed by DarkMate: DEPRECATED
+# hald_enable=\"YES\"" >> /etc/rc.conf
+	fi
 	
 	if grep -q slim_enable /etc/rc.conf ; then
 		sed -i ".bak" "s/slim_enable.*/slim_enable=\"YES\"/" /etc/rc.conf
@@ -514,23 +518,27 @@ t_mate () {
 	echo -e "[ ${GREEN}NOTE${NC} ]  Installing MATE theme
 	"
 	mkdir -p /usr/local/share/backgrounds/fbsd
-	chmod 775 /usr/local/share/backgrounds/fbsd
 	chown root:wheel /usr/local/share/backgrounds/fbsd
+	chmod 775 /usr/local/share/backgrounds/fbsd
+	
 	cd /usr/local/share/backgrounds/fbsd
 	fetch --no-verify-peer https://raw.githubusercontent.com/broozar/installDesktopFreeBSD/DarkMate12.1/files/wallpaper/centerFlat_grey-1080.png
+	chmod 775 centerFlat_grey-1080.png
 	fetch --no-verify-peer https://raw.githubusercontent.com/broozar/installDesktopFreeBSD/DarkMate12.1/files/wallpaper/centerFlat_grey-4k.png
+	chmod 775 centerFlat_grey-4k.png
 	fetch --no-verify-peer https://raw.githubusercontent.com/broozar/installDesktopFreeBSD/DarkMate12.1/files/wallpaper/centerFlat_red-1080.png
+	chmod 775 centerFlat_red-1080.png
 	fetch --no-verify-peer https://raw.githubusercontent.com/broozar/installDesktopFreeBSD/DarkMate12.1/files/wallpaper/centerFlat_red-4k.png
+	chmod 775 centerFlat_red-4k.png
 	
 	mkdir -p /usr/local/etc/dconf/profile
 	cd /usr/local/etc/dconf/profile
 	echo "user-db:user
 system-db:mate
 " > user
-	chmod 775 user
+	chmod 755 user
 	
-	mkdir -p /usr/local/etc/dconf/db/mate.d
-	cd /usr/local/etc/dconf/db/mate.d
+	cd /tmp
 	if fetch --no-verify-peer https://raw.githubusercontent.com/broozar/installDesktopFreeBSD/DarkMate12.1/files/themes/darkmate-settings ; then
 		chmod 775 darkmate-settings
 		if [ -z "$KBD_VAR" ] ; then
@@ -538,6 +546,9 @@ system-db:mate
 		else
 			sed -i ".bak" "s/#####KBD/layouts=['${KBD_LANG}\t${KBD_VAR}']/" darkmate-settings
 		fi
+		
+		mkdir -p /usr/local/etc/dconf/db/mate.d
+		mv darkmate-settings /usr/local/etc/dconf/db/mate.d
 		
 		dconf update
 	fi
@@ -570,10 +581,8 @@ i_chrome () {
 		"
 		pkg install -y chromium
 		if grep -q kern.ipc.shm_allow_removed /etc/sysctl.conf ; then
-			# replace kern.ipc entry
 			sed -i ".bak" "s/kern.ipc.shm_allow_removed.*/kern.ipc.shm_allow_removed=1/" /etc/sysctl.conf
 		else
-			# add kern.ipc entry
 			echo "
 # ---- changed by DarkMate: Chromium browser
 kern.ipc.shm_allow_removed=1" >> /etc/sysctl.conf
@@ -599,7 +608,7 @@ i_vlc () {
 	if [ "$INST_VLC" -eq 1 ] ; then
 		echo -e "[ ${GREEN}NOTE${NC} ]  Installing VLC Media Player
 		"
-		pkg install -y vlc3
+		pkg install -y vlc
 		echo ""
 	fi
 }
@@ -625,8 +634,6 @@ i_office () {
 		echo ""
 		pkg install -y gutenprint
 		echo ""
-		pkg install -y hplip
-		echo ""
 	fi
 }
 i_office
@@ -646,6 +653,8 @@ i_java () {
 		echo -e "[ ${GREEN}NOTE${NC} ]  Installing Netbeans IDE
 		"
 		pkg install -y netbeans
+		cd /usr/local/netbeans*/etc
+		sed -i ".bak" "s/.*netbeans_jdkhome.*/netbeans_jdkhome=\"/usr/local/openjdk8\"/" netbeans.conf
 		echo ""
 	fi
 }
@@ -673,10 +682,13 @@ i_tools () {
 	echo "
 ----- INXI"
 	fetch --no-verify-peer https://raw.githubusercontent.com/smxi/inxi/master/inxi
+	chmod 755 inxi
 	echo "
 ----- custom"
 	fetch --no-verify-peer https://raw.githubusercontent.com/broozar/installDesktopFreeBSD/DarkMate12.1/files/tools/cputemp.sh
+	chmod 755 cputemp.sh
 	fetch --no-verify-peer https://raw.githubusercontent.com/broozar/installDesktopFreeBSD/DarkMate12.1/files/tools/dumpMate.sh
+	chmod 755 dumpMate.sh
 	echo ""
 	
 	if [ "$INST_XORG" -eq 1 ] ; then
@@ -738,8 +750,7 @@ coretemp_load=\"YES\"" >> /boot/loader.conf
 		if grep -q nvidia_load /boot/loader.conf ; then
 			sed -i ".bak" "s/nvidia_load.*/nvidia_load=\"YES\"/" /boot/loader.conf
 		else
-			echo "
-nvidia_load=\"YES\"" >> /boot/loader.conf
+			echo "nvidia_load=\"YES\"" >> /boot/loader.conf
 		fi
 		
 		if grep -q nvidia_name /boot/loader.conf ; then
@@ -767,7 +778,7 @@ s_bootconf
 i_final () {
 	echo -e "[ ${GREEN}NOTE${NC} ]  Time for a final update check!
 	"
-	pkg upgrade
+	pkg upgrade -y
 	echo ""
 
 	echo -e "[ ${YELLOW}NOTE${NC} ]  Installation complete. Please restart your system!
