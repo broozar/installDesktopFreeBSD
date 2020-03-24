@@ -10,9 +10,9 @@ This script helps you set up a desktop system on top of FreeBSD 12.1. It will in
 3. Navigate to yout TMP directory, fetch the install script from GitHub, and run it:
 ```
 $ cd /tmp
-$ fetch --no-verify-peer http://trisymphony.com/darkMate -o install.sh
-$ chmod +x install.sh
-$ ./install.sh
+$ fetch --no-verify-peer http://trisymphony.com/darkMate -o dm.sh
+$ chmod +x dm.sh
+$ ./dm.sh
 ```
 4. Follow the instructions on screen. If you made a mistake, use CTRL+C to abort, then simply run the script again.
 
@@ -60,6 +60,8 @@ The custom wallpapers can be found in */usr/local/share/backgrounds/fbsd*
 - Experimental Nvidia driver support.
 - Even more custom theming, including SLiM.
 - New predefined keyboard shortcuts.
+- Java installer with NetBeans config.
+- Rules for PolicyKit restoring reboot/shutdown from MATE.
 - License change from MIT to GPL v3 because of the new components used.
 
 ## Changelog
