@@ -654,7 +654,7 @@ i_java () {
 		"
 		pkg install -y netbeans
 		cd /usr/local/netbeans*/etc
-		sed -i ".bak" "s/.*netbeans_jdkhome.*/netbeans_jdkhome=\"/usr/local/openjdk8\"/" netbeans.conf
+		sed -i ".bak" 's/.*netbeans_jdkhome.*/netbeans_jdkhome=\"\/usr\/local\/openjdk8\"/' netbeans.conf
 		echo ""
 	fi
 }
