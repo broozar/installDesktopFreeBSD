@@ -25,7 +25,9 @@ You can launch the script with additional parmeters:
 ## Keyboard codes
 The script will ask you to define your keyboard layout. If you go with the defaults, you will be getting the standard US layout. A full list of language and variant codes can be found here: https://unix.stackexchange.com/questions/43976/list-all-valid-kbd-layouts-variants-and-toggle-options-to-use-with-setxkbmap
 
-The layout can be changed later at any point. For MATE, simply navigate to the Keyboard Settings. For SLiM, edit the file **/etc/X11/xorg.conf.d/10-keyboard.conf**
+The layout can be changed later at any point. 
+- For MATE, simply navigate to the Keyboard Settings. 
+- For SLiM, edit the file */etc/X11/xorg.conf.d/10-keyboard.conf*
 
 ## Keyboard Shortcuts
 - SUPER+left, SUPER+right: tile windows left/right
