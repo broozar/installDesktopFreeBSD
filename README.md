@@ -60,7 +60,6 @@ The custom wallpapers can be found in */usr/local/share/backgrounds/fbsd*
 ![PIC Desktop](Screenshots/dm121c.png)
 
 ## YouTube tutorial (click image to play)
-
 [![Watch the video](https://img.youtube.com/vi/vMzE63z6yLk/maxresdefault.jpg)](https://youtu.be/vMzE63z6yLk)
 
 ## Changelog
@@ -72,3 +71,4 @@ The custom wallpapers can be found in */usr/local/share/backgrounds/fbsd*
 ## Credits
 - icon theme is PAPIRUS https://github.com/PapirusDevelopmentTeam/papirus-icon-theme
 - desktop theming guide by olivierd https://forums.freebsd.org/threads/gschema-override-not-holding.69973/#post-422183
+- Arc Grey Theme avaialble on https://github.com/pinpox/arc-grey-theme, retrieved from https://www.gnome-look.org/p/1135255/
