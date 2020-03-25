@@ -262,8 +262,7 @@ s_skel () {
 
 	# MATE startup
 	touch /usr/share/skel/dot.xinitrc
-	echo "# ---- changed by DarkMate:
-	exec mate-session" > /usr/share/skel/dot.xinitrc
+	echo "exec mate-session" > /usr/share/skel/dot.xinitrc
 
 	# separators
 	mkdir -p /usr/share/skel/dot.config/gtk-3.0
@@ -417,13 +416,10 @@ s_procfs () {
 	echo -e "[ ${GREEN}NOTE${NC} ]  Mounting procfs
 	"
 	if grep -q procfs /etc/fstab ; then
-		# found a procfs entry already
-		# should it be forcefully replaced? -> SED
+		echo "procfs entry already exists
+		"
 	else
-		# add procfs entry
-		echo "
-# ---- changed by DarkMate:
-proc		/proc	procfs	rw	0	0" >> "/etc/fstab"		
+		echo "proc		/proc	procfs	rw	0	0" >> /etc/fstab
 	fi
 }
 
@@ -433,7 +429,6 @@ i_slim () {
 	pkg install -y slim
 	echo ""
 	
-	# set keyboard.conf for SLiM
 	mkdir -p /etc/X11/xorg.conf.d
 	chmod 755 /etc/X11/xorg.conf.d
 	touch /etc/X11/xorg.conf.d/10-keyboard.conf
@@ -459,9 +454,7 @@ t_slim () {
 	cd /tmp
 	if fetch --no-verify-peer https://raw.githubusercontent.com/broozar/installDesktopFreeBSD/DarkMate12.1/files/themes/darkslim.tar.xz ; then
 		tar xf darkslim.tar.xz -C /usr/local/share/slim/themes
-		cd /usr/local/share/slim/themes
 		sed -i ".bak" "s/current_theme.*/current_theme		darkslim/" /usr/local/etc/slim.conf
-		cd /tmp
 		rm darkslim.tar.xz
 	fi
 	echo ""
@@ -473,43 +466,33 @@ s_rcconf () {
 	if grep -q moused_enable /etc/rc.conf ; then
 		sed -i ".bak" "s/moused_enable.*/moused_enable=\"YES\"/" /etc/rc.conf
 	else
-		echo "
-# ---- changed by DarkMate:
-moused_enable=\"YES\"" >> /etc/rc.conf
+		echo "moused_enable=\"YES\"" >> /etc/rc.conf
 	fi
 	
 	if grep -q dbus_enable /etc/rc.conf ; then
 		sed -i ".bak" "s/dbus_enable.*/dbus_enable=\"YES\"/" /etc/rc.conf
 	else
-		echo "
-# ---- changed by DarkMate:
-dbus_enable=\"YES\"" >> /etc/rc.conf
+		echo "dbus_enable=\"YES\"" >> /etc/rc.conf
 	fi
 	
-# HALD is deprecated
+	# HALD is deprecated
 	if grep -q hald_enable /etc/rc.conf ; then
-		sed -i ".bak" "s/hald_enable.*/hald_enable=\"YES\"/" /etc/rc.conf
+		echo "" # assume there is a reason why it's already here
 	else
-		echo "
-# ---- changed by DarkMate: DEPRECATED
-# hald_enable=\"YES\"" >> /etc/rc.conf
+		echo "# hald_enable=\"YES\" ### DEPRECATED" >> /etc/rc.conf
 	fi
 	
 	if grep -q slim_enable /etc/rc.conf ; then
 		sed -i ".bak" "s/slim_enable.*/slim_enable=\"YES\"/" /etc/rc.conf
 	else
-		echo "
-# ---- changed by DarkMate:
-slim_enable=\"YES\"" >> /etc/rc.conf
+		echo "slim_enable=\"YES\"" >> /etc/rc.conf
 	fi
 	
 	if [ "$INST_Office" -eq 1 ] ; then
 		if grep -q cupsd_enable /etc/rc.conf ; then
 			sed -i ".bak" "s/cupsd_enable.*/cupsd_enable=\"YES\"/" /etc/rc.conf
 		else
-			echo "
-# ---- changed by DarkMate:
-cupsd_enable=\"YES\"" >> /etc/rc.conf
+			echo "cupsd_enable=\"YES\"" >> /etc/rc.conf
 		fi
 	fi
 }
@@ -584,7 +567,7 @@ i_chrome () {
 			sed -i ".bak" "s/kern.ipc.shm_allow_removed.*/kern.ipc.shm_allow_removed=1/" /etc/sysctl.conf
 		else
 			echo "
-# ---- changed by DarkMate: Chromium browser
+# ---- for Chromium browser
 kern.ipc.shm_allow_removed=1" >> /etc/sysctl.conf
 		fi
 		echo ""
@@ -683,12 +666,12 @@ i_tools () {
 ----- INXI"
 	fetch --no-verify-peer https://raw.githubusercontent.com/smxi/inxi/master/inxi
 	chmod 755 inxi
-	echo "
------ custom"
-	fetch --no-verify-peer https://raw.githubusercontent.com/broozar/installDesktopFreeBSD/DarkMate12.1/files/tools/cputemp.sh
-	chmod 755 cputemp.sh
-	fetch --no-verify-peer https://raw.githubusercontent.com/broozar/installDesktopFreeBSD/DarkMate12.1/files/tools/dumpMate.sh
-	chmod 755 dumpMate.sh
+	#echo "
+#----- custom"
+	#fetch --no-verify-peer https://raw.githubusercontent.com/broozar/installDesktopFreeBSD/DarkMate12.1/files/tools/cputemp.sh
+	#chmod 755 cputemp.sh
+	#fetch --no-verify-peer https://raw.githubusercontent.com/broozar/installDesktopFreeBSD/DarkMate12.1/files/tools/dumpMate.sh
+	#chmod 755 dumpMate.sh
 	echo ""
 	
 	if [ "$INST_XORG" -eq 1 ] ; then
@@ -710,6 +693,8 @@ i_nvidia () {
 		echo ""
 		pkg install -y nvidia-settings
 		echo ""
+		
+		# run autoconfig
 		nvidia-xconfig
 		echo ""
 
@@ -730,6 +715,44 @@ i_nvidia () {
 		"
 		pkg install -y nvidia-driver-304
 		echo ""
+	fi
+	
+	# modify rc.conf for nvidia drivers
+	
+	if [ "$INST_NVIDIA" -eq 1 -o "$INST_LEGVIDIA" -eq 1 ] ; then
+		
+		if grep -q kld_list /etc/rc.conf ; then
+			
+			if grep -q nvidia-modeset /etc/rc.conf ; then
+				echo "" # assume it's already correct
+			else
+				# comment out and add
+				sed -i ".bak" "s/^kld_list/# kld_list/" /etc/rc.conf
+				echo "kld_list=\"nvidia-modeset nvidia\"" >> /etc/rc.conf
+			fi
+			
+		else
+			# paste it in blindly
+			echo "kld_list=\"nvidia-modeset nvidia\"" >> /etc/rc.conf
+		fi
+				
+	elif [ "$INST_OLDVIDIA" -eq 1 -o "$INST_DEADVIDIA" -eq 1 ] ; then
+
+		if grep -q kld_list /etc/rc.conf ; then
+		
+			if grep -q nvidia /etc/rc.conf ; then
+				echo "" # assume it's already correct
+			else
+				# comment out and add
+				sed -i ".bak" "s/^kld_list/# kld_list/" /etc/rc.conf
+				echo "kld_list=\"nvidia\"" >> /etc/rc.conf
+			fi
+			
+		else
+			# paste it in blindly
+			echo "kld_list=\"nvidia\"" >> /etc/rc.conf
+		fi
+		
 	fi	
 }
 i_nvidia
@@ -740,37 +763,7 @@ s_bootconf () {
 	if grep -q coretemp_load /boot/loader.conf ; then
 		sed -i ".bak" "s/coretemp_load.*/coretemp_load=\"YES\"/" /boot/loader.conf
 	else
-		echo "
-# ---- changed by DarkMate:
-coretemp_load=\"YES\"" >> /boot/loader.conf
-	fi
-	
-	if [ "$INST_NVIDIA" -eq 1 -o "$INST_LEGVIDIA" -eq 1 ] ; then
-		
-		if grep -q nvidia_load /boot/loader.conf ; then
-			sed -i ".bak" "s/nvidia_load.*/nvidia_load=\"YES\"/" /boot/loader.conf
-		else
-			echo "nvidia_load=\"YES\"" >> /boot/loader.conf
-		fi
-		
-		if grep -q nvidia_name /boot/loader.conf ; then
-			sed -i ".bak" "s/nvidia_name.*/nvidia_name=\"nvidia\"/" /boot/loader.conf
-		else
-			echo "nvidia_name=\"nvidia\"" >> /boot/loader.conf
-		fi		
-		
-		if grep -q nvidia_modeset_load /boot/loader.conf ; then
-			sed -i ".bak" "s/nvidia_modeset_load.*/nvidia_modeset_load=\"YES\"/" /boot/loader.conf
-		else
-			echo "nvidia_modeset_load=\"YES\"" >> /boot/loader.conf
-		fi
-		
-		if grep -q nvidia_modeset_name /boot/loader.conf ; then
-			sed -i ".bak" "s/nvidia_modeset_name.*/nvidia_modeset_name=\"nvidia-modeset\"/" /boot/loader.conf
-		else
-			echo "nvidia_modeset_name=\"nvidia-modeset\"" >> /boot/loader.conf
-		fi
-		
+		echo "coretemp_load=\"YES\"" >> /boot/loader.conf
 	fi
 }
 s_bootconf
