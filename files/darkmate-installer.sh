@@ -3,7 +3,7 @@
 # DarkMate Desktop for FreeBSD 12.1
 # by Felix Caffier
 # http://www.trisymphony.com
-# rev. 2020-03-31 with custom theming, github downloads and functions
+# rev. 2020-05-02 with custom theming, github downloads and functions
 
 # ----------------------------------------------------------------------
 # ------------------------------------ Notes
@@ -77,105 +77,105 @@ _n () {
 # ------------------------------------ welcome message
 
 clear
-echo -e "${CYAN}DarkMate setup script for FreeBSD 12.1
-by Felix Caffier (http://www.trisymphony.com)${NC}
-
-This script will install PKG, X, the MATE desktop with theming, some optional
-Desktop software, SLiM, and set up users. Nvidia driver support is still
-experimental and auto configuration is only supported for modern cards.
-
-If you made a mistake answering the questions, you can quit out 
-of the installer by pressing ${CYAN}CTRL+C${NC} and then start again.
-"
+printf "${CYAN}DarkMate setup script for FreeBSD 12.1\nby Felix Caffier (http://www.trisymphony.com)${NC}\n\n"
+printf "This script will install PKG, X, the MATE desktop with theming, some optional\n"
+printf "Desktop software, SLiM, and set up users. Nvidia driver support is still\n"
+printf "experimental and auto configuration is only supported for modern cards.\n\n"
+printf "If you made a mistake answering the questions, you can quit out\n"
+printf "of the installer by pressing ${CYAN}CTRL+C${NC} and then start again.\n\n"
 
 # ------------------------------------ checks
 
 c_root () {
 	MY_ID=$(id -u)
 	if [ "$MY_ID" -ne 0 ]; then
-		echo -e "[ ${RED}ERROR${NC} ]  This script needs to be run as ${CYAN}root user${NC}.
-		"
+		printf "[ ${RED}ERROR${NC} ]  This script needs to be run as ${CYAN}root user${NC}.\n\n"
 		exit 1
 	fi
-	echo -e "[ ${GREEN}INFO${NC} ]  Running as root"
+	printf "[ ${GREEN}INFO${NC} ]  Running as root\n"
 }
-c_root
 
 c_arch () {
 	MY_ARCH=$(uname -m)
-	echo -e "[ ${GREEN}INFO${NC} ]  Processor architecture: $MY_ARCH"
+	printf "[ ${GREEN}INFO${NC} ]  Processor architecture: $MY_ARCH\n"
 }
-c_arch
 
 c_pkg () {
 	case "$(/usr/sbin/pkg -N 2>&1)" in
 		*" not "*) 
-			echo -e "[ ${GREEN}INFO${NC} ]  PKG will be bootstrapped" 
+			printf "[ ${GREEN}INFO${NC} ]  PKG will be bootstrapped\n"
 			INST_PKG=1
 			;;
 		*) 
-			echo -e "[ ${YELLOW}NOTE${NC} ]  PKG was bootstrapped before"
+			printf "[ ${YELLOW}NOTE${NC} ]  PKG was bootstrapped before\n"
 			INST_PKG=0
 			;;
 	esac
 }
-c_pkg
 
 c_overrides () {
 	while getopts ":xu" opt; do
 		case $opt in
 			x)
 				INST_XORG=0
-				echo -e "[ ${YELLOW}NOTE${NC} ]  -x: Xorg will not be explicitly installed!"
+				printf "[ ${YELLOW}NOTE${NC} ]  -x: Xorg will not be explicitly installed!\n"
 				;;
 			u)
 				FBSD_UPD=1
-				echo -e "[ ${YELLOW}NOTE${NC} ]  -u: Installing FreeBSD updates! [ ${CYAN}:q${NC} ] to continue after updates."
+				printf "[ ${YELLOW}NOTE${NC} ]  -u: Installing FreeBSD updates! [ ${CYAN}:q${NC} ] to continue after updates.\n"
 				;;
 		esac
 	done
 }
-c_overrides
 
 c_network () {
 	if nc -zw1 8.8.8.8 443 > /dev/null 2>&1 ; then
-		echo -e "[ ${GREEN}INFO${NC} ]  Internet connection detected"
+		printf "[ ${GREEN}INFO${NC} ]  Internet connection detected\n"
 	else
-		echo -e "[ ${YELLOW}NOTE${NC} ]  Could not verify internet connection!"
-		echo -e "[ ${YELLOW}NOTE${NC} ]  You must be online for this script to work!"
-		echo -e "[ ${YELLOW}NOTE${NC} ]  Proceed with caution...
-		"
+		printf "[ ${YELLOW}NOTE${NC} ]  Could not verify internet connection!\n"
+		printf "[ ${YELLOW}NOTE${NC} ]  You must be online for this script to work!\n"
+		printf "[ ${YELLOW}NOTE${NC} ]  Proceed with caution...\n\n"
 	fi
 }
+
+c_root
+c_arch
+c_pkg
+c_overrides
 c_network
 
 # ------------------------------------ keyboard selection
 
-echo -e "[ ${GREEN}INFO${NC} ]  The default keymap for MATE and the login is '${CYAN}us${NC}' (English).
-You can change this now using your 2-letter languange code like '${CYAN}de${NC}' (German),
-'${CYAN}fr${NC}' (French), '${CYAN}dk${NC}' (Danish) etc., and a variant like '${CYAN}oss${NC}' or '${CYAN}dvorak${NC}' if
-needed in the 2nd step. You can change your keyboard mapping later at any point.
-"
-read -p "Which language does your keyboard have? [us] " response
-if [ -z "$response" ] ; then
-	echo "Choosing the default US layout.
-	"
-else
-	KBD_LANG="$response"
-fi
+kbd_welcome () {
+	printf "[ ${GREEN}INFO${NC} ]  The default keymap for MATE and the login is '${CYAN}us${NC}' (English).\n"
+	printf "You can change this now using your 2-letter languange code like '${CYAN}de${NC}' (German),\n"
+	printf "'${CYAN}fr${NC}' (French), '${CYAN}dk${NC}' (Danish) etc., and a variant like '${CYAN}oss${NC}' or '${CYAN}dvorak${NC}' if\n"
+	printf "needed in the 2nd step. You can change your keyboard mapping later at any point.\n\n"
+}
 
-read -p "Which language variant does your keyboard use? [] " response
-if [ -z "$response" ] ; then
-	echo "Choosing no special layout variant.
-	"
-else
-	KBD_VAR="$response"
-fi
+kbd_read () {
+	read -p "Which language does your keyboard have? [us] " response
+	if [ -z "$response" ] ; then
+		printf "Choosing the default US layout.\n\n"
+	else
+		KBD_LANG="$response"
+	fi
+
+	read -p "Which language variant does your keyboard use? [] " response
+	if [ -z "$response" ] ; then
+		printf "Choosing no special layout variant.\n\n"
+	else
+		KBD_VAR="$response"
+	fi
+}
+
+kbd_welcome
+kbd_read
 
 # ------------------------------------ software
 
-echo -e "[ ${GREEN}INFO${NC} ]  Software selection
-"
+printf "[ ${GREEN}INFO${NC} ]  Software selection\n\n"
+
 _n "Install Firefox (Mozilla web browser)? [y/N] "
 INST_Firefox=$?
 
@@ -197,13 +197,13 @@ INST_CPP=$?
 _n "Install Java and IDE (Netbeans)? [y/N] "
 INST_Java=$?
 
-echo""
+echo ""
 
-# ------------------------------------ drivers
+# ------------------------------------ nvidia drivers
 
-echo -e "[ ${GREEN}INFO${NC} ]  Graphics drivers ${YELLOW}(experimental)${NC} - Select a driver based on the
-model of your card. Only the latest drivers support auto configuration!
-"
+printf "[ ${GREEN}INFO${NC} ]  Graphics drivers ${YELLOW}(experimental)${NC} - Select a driver based on the\n"
+printf "model of your card. Only the latest drivers support auto configuration!\n\n"
+
 _n "Install NVidia-current drivers (GeForce 600 and later)? [y/N] "
 INST_NVIDIA=$?
 
@@ -219,6 +219,7 @@ if [ "$INST_NVIDIA" -eq 0 -a "$INST_LEGVIDIA" -eq 0 -a "$INST_OLDVIDIA" -eq 0 ] 
 	_n "Install NVidia-ancient drivers instead (GeForce 6/7)? [y/N] "
 	INST_DEADVIDIA=$?
 fi
+
 echo ""
 
 # ------------------------------------ ask PKG mirror location
@@ -237,14 +238,14 @@ fi
 # ------------------------------------ confirmation
 
 echo ""
-echo -e "[ ${YELLOW}NOTE${NC} ]  Last chance to turn back!"
+
+printf "[ ${YELLOW}NOTE${NC} ]  Last chance to turn back!\n"
 read -p "Is everything above correct? Start installation now? [y/N] " response
 if echo "$response" | grep -iq "^y" ;
 then
 	echo "" # starting installation now
 else
-	echo -e "[ ${YELLOW}NOTE${NC} ]  Aborting installation.
-	"
+	printf "[ ${YELLOW}NOTE${NC} ]  Aborting installation.\n"
 	exit 5
 fi
 
@@ -275,19 +276,16 @@ s_skel () {
 	# rights
 	chown -R root:wheel /usr/share/skel 
 }
-s_skel
 
 s_user () {
-	echo -e "[ ${GREEN}INFO${NC} ]  Creating new user account. Please follow the instructions"
+	printf "[ ${GREEN}INFO${NC} ]  Creating new user account. Please follow the instructions.\n"
 	if [ "$INST_Office" -eq 1 ] ; then
-		echo -e "on screen, and remember to invite yourself to the '${CYAN}wheel video cups${NC}'"
+		printf "on screen, and remember to invite yourself to the '${CYAN}wheel video cups${NC}'\n"
 	else
-		echo -e "on screen, and remember to invite yourself to the '${CYAN}wheel video${NC}'"
+		printf "on screen, and remember to invite yourself to the '${CYAN}wheel video${NC}'\n"
 	fi
-	echo -e "groups and give yourself a proper ${YELLOW}password${NC}!
-
-The installer also assumes your home folder is located in ${CYAN}/home${NC}.
-"
+	printf "groups and give yourself a proper ${YELLOW}password${NC}!\n"
+	printf "The installer also assumes your home folder is located in ${CYAN}/home${NC}.\n\n"
 
 	if [ "$INST_Office" -eq 1 ] ; then
 		groupadd cups
@@ -296,13 +294,13 @@ The installer also assumes your home folder is located in ${CYAN}/home${NC}.
 	if adduser ; then
 		echo ""	# continue
 	else
-		echo -e "[ ${RED}ERROR${NC} ]  User creation failed!
-		"
+		printf "[ ${RED}ERROR${NC} ]  User creation failed!\n"
 		exit 1
 	fi
 }
-s_user
 
+s_skel
+s_user
 
 # ----------------------------------------------------------------------
 # ------------------------------------ installation
@@ -312,24 +310,21 @@ s_user
 
 i_patches () {
 	if [ "$FBSD_UPD" -eq 1 ] ; then
-		echo -e "[ ${GREEN}NOTE${NC} ]  Applying latest FreeBSD security patches
-		"
+		printf "[ ${GREEN}NOTE${NC} ]  Applying latest FreeBSD security patches\n\n"
 		freebsd-update fetch install
 		echo ""
 	else
-		echo -e "[ ${YELLOW}NOTE${NC} ]  Skipping FreeBSD security patches"
+		printf "[ ${YELLOW}NOTE${NC} ]  Skipping FreeBSD security patches\n"
 	fi
 }
-i_patches
 
 i_pkg () {
 	if [ "$INST_PKG" -eq 1 ] ; then
-		echo -e "[ ${GREEN}NOTE${NC} ]  Bootstrapping PKG
-		"
+		printf "[ ${GREEN}NOTE${NC} ]  Bootstrapping PKG\n\n"
 		env ASSUME_ALWAYS_YES=YES /usr/sbin/pkg
 		echo ""
 	else
-		echo -e "[ ${YELLOW}NOTE${NC} ]  Skipping PKG bootstrap"
+		printf "[ ${YELLOW}NOTE${NC} ]  Skipping PKG bootstrap\n"
 	fi
 
 	mkdir -p /usr/local/etc/pkg/repos
@@ -347,17 +342,14 @@ i_pkg () {
 	if pkg update -f ; then
 		echo "" # pkg was updated, we can continue
 	else
-		echo -e "[ ${RED}ERROR${NC} ]  PKG update failed
-		"
+		printf "[ ${RED}ERROR${NC} ]  PKG update failed\n"
 		exit 1
 	fi
 }
-i_pkg
 
 i_xorg () {
 	if [ "$INST_XORG" -eq 1 ] ; then
-		echo -e "[ ${GREEN}NOTE${NC} ]  Installing XORG
-		"
+		printf "[ ${GREEN}NOTE${NC} ]  Installing XORG\n\n"
 		pkg install -y xorg
 		echo ""
 		
@@ -368,28 +360,27 @@ i_xorg () {
 		echo ""
 	fi
 }
+
+i_patches
+i_pkg
 i_xorg
 
 # ------------------------------------ MATE
 
 i_mate () {
-	echo -e "[ ${GREEN}NOTE${NC} ]  Installing MATE Desktop
-	"
+	printf "[ ${GREEN}NOTE${NC} ]  Installing MATE Desktop\n\n"
 	pkg install -y mate
 	echo ""
 	
-	echo -e "[ ${GREEN}NOTE${NC} ]  Installing Brisk Menu
-	"
+	printf "[ ${GREEN}NOTE${NC} ]  Installing Brisk Menu\n\n"
 	pkg install -y brisk-menu
 	echo ""
 
-	echo -e "[ ${GREEN}NOTE${NC} ]  Installing Arc Themes
-	"
+	printf "[ ${GREEN}NOTE${NC} ]  Installing Arc Themes\n\n"
 	pkg install -y gtk-arc-themes
 	echo ""
 	
-	echo -e "[ ${GREEN}NOTE${NC} ]  Installing Arc Dark Grey
-	"
+	printf "[ ${GREEN}NOTE${NC} ]  Installing Arc Dark Grey\n\n"
 	cd /tmp
 	if fetch --no-verify-peer https://raw.githubusercontent.com/broozar/installDesktopFreeBSD/DarkMate12.1/files/themes/Arc-Dark-Grey.tar.xz ; then
 		tar xf Arc-Dark-Grey.tar.xz -C /usr/local/share/themes
@@ -398,13 +389,11 @@ i_mate () {
 	fi
 	echo ""
 	
-	echo -e "[ ${GREEN}NOTE${NC} ]  Installing Papirus icons
-	"
+	printf "[ ${GREEN}NOTE${NC} ]  Installing Papirus icons\n\n"
 	pkg install -y papirus-icon-theme
 	echo ""
 
-	echo -e "[ ${GREEN}NOTE${NC} ]  Adding PolicyKit rules
-	"	
+	printf "[ ${GREEN}NOTE${NC} ]  Adding PolicyKit rules\n\n"	
 	cd /usr/local/share/polkit-1/rules.d
 	fetch --no-verify-peer https://raw.githubusercontent.com/broozar/installDesktopFreeBSD/DarkMate12.1/files/polkit/shutdown-reboot.rules
 	chmod 755 shutdown-reboot.rules
@@ -413,19 +402,25 @@ i_mate () {
 }
 
 s_procfs () {
-	echo -e "[ ${GREEN}NOTE${NC} ]  Mounting procfs
-	"
+	printf "[ ${GREEN}NOTE${NC} ]  Declaring procfs in /etc/fstab\n\n"
 	if grep -q procfs /etc/fstab ; then
-		echo "procfs entry already exists
-		"
+		printf "procfs entry already exists\n\n"
 	else
 		echo "proc		/proc	procfs	rw	0	0" >> /etc/fstab
 	fi
 }
 
+s_tmpfs () {
+	printf "[ ${GREEN}NOTE${NC} ]  Declaring tmpfs in /etc/fstab\n\n"
+	if grep -q procfs /etc/fstab ; then
+		printf "tmpfs entry already exists\n\n"
+	else
+		mkdir /tmpfs && chmod 777 /tmpfs && ln -s /tmpfs /usr/share/skel/tmpfs && echo "tmpfs		/tmpfs		tmpfs	rw	0	0" >> /etc/fstab
+	fi	
+}
+
 i_slim () {
-	echo -e "[ ${GREEN}NOTE${NC} ]  Installing SLiM
-	"
+	printf "[ ${GREEN}NOTE${NC} ]  Installing SLiM\n\n"
 	pkg install -y slim
 	echo ""
 	
@@ -449,8 +444,7 @@ Section \"InputClass\"
 }
 
 t_slim () {
-	echo -e "[ ${GREEN}NOTE${NC} ]  Installing SLiM theme
-	"
+	printf "[ ${GREEN}NOTE${NC} ]  Installing SLiM theme\n\n"
 	cd /tmp
 	if fetch --no-verify-peer https://raw.githubusercontent.com/broozar/installDesktopFreeBSD/DarkMate12.1/files/themes/darkslim.tar.xz ; then
 		tar xf darkslim.tar.xz -C /usr/local/share/slim/themes
@@ -461,8 +455,8 @@ t_slim () {
 }
 
 s_rcconf () {
-	echo -e "[ ${GREEN}NOTE${NC} ]  Configuring rc.conf
-	"
+	printf "[ ${GREEN}NOTE${NC} ]  Configuring rc.conf\n\n"
+	
 	if grep -q moused_enable /etc/rc.conf ; then
 		sed -i ".bak" "s/moused_enable.*/moused_enable=\"YES\"/" /etc/rc.conf
 	else
@@ -498,8 +492,7 @@ s_rcconf () {
 }
 
 t_mate () {
-	echo -e "[ ${GREEN}NOTE${NC} ]  Installing MATE theme
-	"
+	printf "[ ${GREEN}NOTE${NC} ]  Installing MATE theme\n\n"
 	mkdir -p /usr/local/share/backgrounds/fbsd
 	chown root:wheel /usr/local/share/backgrounds/fbsd
 	chmod 775 /usr/local/share/backgrounds/fbsd
@@ -542,16 +535,18 @@ system-db:mate
 if [ "$INST_MATE" -eq 1 ] ; then
 	i_mate		# install MATE & related pkgs
 	s_procfs	# setup procfs
+	s_tmpfs		# setup tmpfs
 	i_slim		# install SLiM pkg
 	t_slim		# theme SLiM
 	s_rcconf	# modifying rc.conf
 	t_mate		# theme mate
 fi
 
+# ------------------------------------ user selected software
+
 i_firefox () {
 	if [ "$INST_Firefox" -eq 1 ] ; then
-		echo -e "[ ${GREEN}NOTE${NC} ]  Installing Firefox Browser
-		"
+		printf "[ ${GREEN}NOTE${NC} ]  Installing Firefox Browser\n\n"
 		pkg install -y firefox
 		echo ""
 	fi
@@ -560,8 +555,7 @@ i_firefox
 
 i_chrome () {
 	if [ "$INST_Chromium" -eq 1 ] ; then
-		echo -e "[ ${GREEN}NOTE${NC} ]  Installing Chromium Browser
-		"
+		printf "[ ${GREEN}NOTE${NC} ]  Installing Chromium Browser\n\n"
 		pkg install -y chromium
 		if grep -q kern.ipc.shm_allow_removed /etc/sysctl.conf ; then
 			sed -i ".bak" "s/kern.ipc.shm_allow_removed.*/kern.ipc.shm_allow_removed=1/" /etc/sysctl.conf
@@ -577,8 +571,7 @@ i_chrome
 
 i_mail () {
 	if [ "$INST_Thunderbird" -eq 1 ] ; then
-		echo -e "[ ${GREEN}NOTE${NC} ]  Installing Thunderbird
-		"
+		printf "[ ${GREEN}NOTE${NC} ]  Installing Thunderbird\n\n"
 		pkg install -y thunderbird
 		echo ""
 		pkg install -y thunderbird-dictionaries
@@ -589,8 +582,7 @@ i_mail
 
 i_vlc () {
 	if [ "$INST_VLC" -eq 1 ] ; then
-		echo -e "[ ${GREEN}NOTE${NC} ]  Installing VLC Media Player
-		"
+		printf "[ ${GREEN}NOTE${NC} ]  Installing VLC Media Player\n\n"
 		pkg install -y vlc
 		echo ""
 	fi
@@ -599,18 +591,15 @@ i_vlc
 
 i_office () {
 	if [ "$INST_Office" -eq 1 ] ; then
-		echo -e "[ ${GREEN}NOTE${NC} ]  Installing LibreOffice
-		"
+		printf "[ ${GREEN}NOTE${NC} ]  Installing LibreOffice\n\n"
 		pkg install -y libreoffice
 		echo ""
 		
-		echo -e "[ ${GREEN}NOTE${NC} ]  Installing Xsane
-		"
+		printf "[ ${GREEN}NOTE${NC} ]  Installing Xsane\n\n"
 		pkg install -y xsane
 		echo ""
 
-		echo -e "[ ${GREEN}NOTE${NC} ]  Installing CUPS
-		"
+		printf "[ ${GREEN}NOTE${NC} ]  Installing CUPS\n\n"
 		pkg install -y cups
 		echo ""
 		pkg install -y cups-pdf
@@ -623,8 +612,7 @@ i_office
 
 i_cpp () {
 	if [ "$INST_CPP" -eq 1 ] ; then
-		echo -e "[ ${GREEN}NOTE${NC} ]  Installing CodeLite IDE
-		"
+		printf "[ ${GREEN}NOTE${NC} ]  Installing CodeLite IDE\n\n"
 		pkg install -y codelite
 		echo ""
 	fi
@@ -633,8 +621,7 @@ i_cpp
 
 i_java () {
 	if [ "$INST_Java" -eq 1 ] ; then
-		echo -e "[ ${GREEN}NOTE${NC} ]  Installing Netbeans IDE
-		"
+		printf "[ ${GREEN}NOTE${NC} ]  Installing Netbeans IDE\n\n"
 		pkg install -y netbeans
 		cd /usr/local/netbeans*/etc
 		sed -i ".bak" 's/.*netbeans_jdkhome.*/netbeans_jdkhome=\"\/usr\/local\/openjdk8\"/' netbeans.conf
@@ -643,27 +630,31 @@ i_java () {
 }
 i_java
 
-i_tools () {
-	echo -e "[ ${GREEN}NOTE${NC} ]  Installing additional tools
+# ------------------------------------ automatically selected software
 
------ NANO"
+i_tools () {
+	printf "[ ${GREEN}NOTE${NC} ]  Installing additional tools\n\n----- NANO\n"
 	pkg install -y nano
-	echo "
------ VIM"
+	
+	echo ""
+	echo "----- VIM"
 	pkg install -y vim
-	echo "
------ UNAR"
+
+	echo ""
+	echo "----- UNAR"
 	pkg install -y unar
-	echo "
------ SYSINFO"
+
+	echo ""
+	echo "----- SYSINFO"
 	pkg install -y sysinfo
-	echo "
------ HTOP"
+
+	echo ""
+	echo "----- HTOP"
 	pkg install -y htop
 
 	cd /usr/local/bin
-	echo "
------ INXI"
+	echo ""
+	echo "----- INXI"
 	fetch --no-verify-peer https://raw.githubusercontent.com/smxi/inxi/master/inxi
 	chmod 755 inxi
 	#echo "
@@ -672,21 +663,22 @@ i_tools () {
 	#chmod 755 cputemp.sh
 	#fetch --no-verify-peer https://raw.githubusercontent.com/broozar/installDesktopFreeBSD/DarkMate12.1/files/tools/dumpMate.sh
 	#chmod 755 dumpMate.sh
-	echo ""
 	
 	if [ "$INST_XORG" -eq 1 ] ; then
+		echo ""
 		echo "----- GEANY"
 		pkg install -y geany
-		echo ""
 	fi
-
+	
+	echo ""
 }
 i_tools
 
+# ------------------------------------ drivers and boot
+
 i_nvidia () {
 	if [ "$INST_NVIDIA" -eq 1 ] ; then
-		echo -e "[ ${GREEN}NOTE${NC} ]  Installing NVIDIA (current)
-		"
+		printf "[ ${GREEN}NOTE${NC} ]  Installing NVIDIA (current)\n\n"
 		pkg install -y nvidia-driver
 		echo ""
 		pkg install -y nvidia-xconfig
@@ -699,20 +691,17 @@ i_nvidia () {
 		echo ""
 
 	elif [ "$INST_LEGVIDIA" -eq 1 ] ; then
-		echo -e "[ ${GREEN}NOTE${NC} ]  Installing NVIDIA (legacy)
-		"
+		printf "[ ${GREEN}NOTE${NC} ]  Installing NVIDIA (legacy)\n\n"
 		pkg install -y nvidia-driver-390
 		echo ""
 	
 	elif [ "$INST_OLDVIDIA" -eq 1 ] ; then
-		echo -e "[ ${GREEN}NOTE${NC} ]  Installing NVIDIA (old)
-		"
+		printf "[ ${GREEN}NOTE${NC} ]  Installing NVIDIA (old)\n\n"
 		pkg install -y nvidia-driver-340
 		echo ""
 	
 	elif [ "$INST_DEADVIDIA" -eq 1 ] ; then
-		echo -e "[ ${GREEN}NOTE${NC} ]  Installing NVIDIA (ancient)
-		"
+		printf "[ ${GREEN}NOTE${NC} ]  Installing NVIDIA (ancient)\n\n"
 		pkg install -y nvidia-driver-304
 		echo ""
 	fi
@@ -758,8 +747,7 @@ i_nvidia () {
 i_nvidia
 
 s_bootconf () {
-	echo -e "[ ${GREEN}NOTE${NC} ]  Configuring boot/loader.conf
-	"
+	printf "[ ${GREEN}NOTE${NC} ]  Configuring boot/loader.conf\n\n"
 	if grep -q coretemp_load /boot/loader.conf ; then
 		sed -i ".bak" "s/coretemp_load.*/coretemp_load=\"YES\"/" /boot/loader.conf
 	else
@@ -769,15 +757,13 @@ s_bootconf () {
 s_bootconf
 
 i_final () {
-	echo -e "[ ${GREEN}NOTE${NC} ]  Time for a final update check!
-	"
+	printf "[ ${GREEN}NOTE${NC} ]  Time for a final update check!\n\n"
 	pkg upgrade -y
 	echo ""
 
-	echo -e "[ ${YELLOW}NOTE${NC} ]  Installation complete. Please restart your system!
-Either type ${CYAN}shutdown -r now${NC} to reboot now, or manually add
-other applications with ${CYAN}pkg install §name${NC} and reboot later.
-"
+	printf "[ ${YELLOW}NOTE${NC} ]  Installation complete. Please restart your system!\n"
+	printf "Either type ${CYAN}shutdown -r now${NC} to reboot now, or manually add\n"
+	printf "other applications with ${CYAN}pkg install §name${NC} and reboot later.\n\n"
 }
 i_final
 
