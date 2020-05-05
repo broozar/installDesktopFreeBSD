@@ -67,6 +67,7 @@ The custom wallpapers can be found in */usr/local/share/backgrounds/fbsd*
 - License change from MIT to GPL v3 because of the new components used.
 
 ## Changelog
+- 2020-05-02: refactoring, printf, new feature: tmpfs directory
 - 2020-03-27: DarkMate 12.1 release, switch to FreeBSD 12.1
 - 2019-03-29: first DarkMate release, switch to FreeBSD 12
 - 2018-01-11: added -x -u parameters, fixes for KDE/VLC, new network check, Xorg installed by default, echo -y removed, added freebsd-update<br />
