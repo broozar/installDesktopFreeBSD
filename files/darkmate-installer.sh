@@ -461,6 +461,8 @@ s_rcconf () {
 	sysrc dbus_enable="YES"
 	sysrc slim_enable="YES"
 
+
+	# HALD is Deprecated
 	if grep -q hald_enable /etc/rc.conf ; then
 		echo "" # assume there is a reason why it's already here
 	else
