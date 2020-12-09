@@ -456,38 +456,22 @@ t_slim () {
 
 s_rcconf () {
 	printf "[ ${GREEN}NOTE${NC} ]  Configuring rc.conf\n\n"
-	
-	if grep -q moused_enable /etc/rc.conf ; then
-		sed -i ".bak" "s/moused_enable.*/moused_enable=\"YES\"/" /etc/rc.conf
-	else
-		echo "moused_enable=\"YES\"" >> /etc/rc.conf
-	fi
-	
-	if grep -q dbus_enable /etc/rc.conf ; then
-		sed -i ".bak" "s/dbus_enable.*/dbus_enable=\"YES\"/" /etc/rc.conf
-	else
-		echo "dbus_enable=\"YES\"" >> /etc/rc.conf
-	fi
-	
-	# HALD is deprecated
+	cp /etc/rc.conf /etc/rc.conf.bak
+	sysrc moused_enable="YES"
+	sysrc dbus_enable="YES"
+	sysrc slim_enable="YES"
+
+
+	# HALD is Deprecated
 	if grep -q hald_enable /etc/rc.conf ; then
 		echo "" # assume there is a reason why it's already here
 	else
 		echo "# hald_enable=\"YES\" ### DEPRECATED" >> /etc/rc.conf
 	fi
 	
-	if grep -q slim_enable /etc/rc.conf ; then
-		sed -i ".bak" "s/slim_enable.*/slim_enable=\"YES\"/" /etc/rc.conf
-	else
-		echo "slim_enable=\"YES\"" >> /etc/rc.conf
-	fi
 	
 	if [ "$INST_Office" -eq 1 ] ; then
-		if grep -q cupsd_enable /etc/rc.conf ; then
-			sed -i ".bak" "s/cupsd_enable.*/cupsd_enable=\"YES\"/" /etc/rc.conf
-		else
-			echo "cupsd_enable=\"YES\"" >> /etc/rc.conf
-		fi
+		sysrc cupsd_enable=YES"
 	fi
 }
 
@@ -709,39 +693,12 @@ i_nvidia () {
 	# modify rc.conf for nvidia drivers
 	
 	if [ "$INST_NVIDIA" -eq 1 -o "$INST_LEGVIDIA" -eq 1 ] ; then
-		
-		if grep -q kld_list /etc/rc.conf ; then
-			
-			if grep -q nvidia-modeset /etc/rc.conf ; then
-				echo "" # assume it's already correct
-			else
-				# comment out and add
-				sed -i ".bak" "s/^kld_list/# kld_list/" /etc/rc.conf
-				echo "kld_list=\"nvidia-modeset nvidia\"" >> /etc/rc.conf
-			fi
-			
-		else
-			# paste it in blindly
-			echo "kld_list=\"nvidia-modeset nvidia\"" >> /etc/rc.conf
-		fi
+		sysrc kld_list+="nvidia-modeset"
+		sysrc kld_list+="nvidia"
+	fi
 				
 	elif [ "$INST_OLDVIDIA" -eq 1 -o "$INST_DEADVIDIA" -eq 1 ] ; then
-
-		if grep -q kld_list /etc/rc.conf ; then
-		
-			if grep -q nvidia /etc/rc.conf ; then
-				echo "" # assume it's already correct
-			else
-				# comment out and add
-				sed -i ".bak" "s/^kld_list/# kld_list/" /etc/rc.conf
-				echo "kld_list=\"nvidia\"" >> /etc/rc.conf
-			fi
-			
-		else
-			# paste it in blindly
-			echo "kld_list=\"nvidia\"" >> /etc/rc.conf
-		fi
-		
+		sysrc kld_list+="nvidia"
 	fi	
 }
 i_nvidia
