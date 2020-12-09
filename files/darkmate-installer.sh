@@ -461,17 +461,15 @@ s_rcconf () {
 	sysrc dbus_enable="YES"
 	sysrc slim_enable="YES"
 
-
 	# HALD is Deprecated
 	if grep -q hald_enable /etc/rc.conf ; then
 		echo "" # assume there is a reason why it's already here
 	else
 		echo "# hald_enable=\"YES\" ### DEPRECATED" >> /etc/rc.conf
 	fi
-	
-	
+
 	if [ "$INST_Office" -eq 1 ] ; then
-		sysrc cupsd_enable=YES"
+		sysrc cupsd_enable="YES"
 	fi
 }
 
