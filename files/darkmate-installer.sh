@@ -693,7 +693,6 @@ i_nvidia () {
 	if [ "$INST_NVIDIA" -eq 1 -o "$INST_LEGVIDIA" -eq 1 ] ; then
 		sysrc kld_list+="nvidia-modeset"
 		sysrc kld_list+="nvidia"
-	fi
 				
 	elif [ "$INST_OLDVIDIA" -eq 1 -o "$INST_DEADVIDIA" -eq 1 ] ; then
 		sysrc kld_list+="nvidia"
