@@ -12,7 +12,7 @@ This script helps you set up a desktop system on top of FreeBSD 13.0. It will in
 $ cd /tmp
 $ fetch --no-verify-peer http://trisymphony.com/darkMate13 -o dm.sh
 $ chmod +x dm.sh
-$ ./dm.sh
+$ sh dm.sh
 ```
 4. Follow the instructions on screen. If you made a mistake, use CTRL+C to abort, then simply run the script again.
 
@@ -22,13 +22,6 @@ You can launch the script with additional parmeters:
 -x skips the Xorg installation<br />
 -u forces freebsd-update<br />
 -d skips the new dialog UI
-
-## Keyboard codes
-If you do not use the new dialog UI, the script will ask you to define your keyboard layout. If you go with the defaults, you will be getting the standard US layout. A full list of language and variant codes can be found here: https://unix.stackexchange.com/questions/43976/list-all-valid-kbd-layouts-variants-and-toggle-options-to-use-with-setxkbmap
-
-The layout can be changed later at any point. 
-- For MATE, simply navigate to the Keyboard Settings. 
-- For SLiM, edit the file */etc/X11/xorg.conf.d/10-keyboard.conf*
 
 ## Keyboard Shortcuts
 - SUPER+left, SUPER+right: tile windows left/right
@@ -53,6 +46,13 @@ The custom wallpapers can be found in */usr/local/share/backgrounds/fbsd*
 ## YouTube tutorial for previous version 12.x (click image to play)
 <a href="https://youtu.be/vMzE63z6yLk" target="_blank"><img src="https://img.youtube.com/vi/vMzE63z6yLk/maxresdefault.jpg" width=350 alt="yt link" /></a>
 
+## Keyboard codes without dialog
+If you do not use the new dialog UI, the script will ask you to define your keyboard layout. If you go with the defaults, you will be getting the standard US layout. A full list of language and variant codes can be found here: https://unix.stackexchange.com/questions/43976/list-all-valid-kbd-layouts-variants-and-toggle-options-to-use-with-setxkbmap
+
+The layout can be changed later at any point. 
+- For MATE, simply navigate to the Keyboard Settings. 
+- For SLiM, edit the file */etc/X11/xorg.conf.d/10-keyboard.conf*
+
 ## Untested
 - My hardware selection is limited. Only current nVidia drivers and AMDGPU are tested. If you have older hardware and/or intel graphics, please let me know if/how it works.
 
@@ -62,7 +62,7 @@ The custom wallpapers can be found in */usr/local/share/backgrounds/fbsd*
 - almost all config files are pulled out of the script and have been put on github as separate files, which will be downloaded as needed
 
 ## Changelog
-- 2021-03-10: bug fixes, additional Linux Mint dark themes, new features: dialog, amd, intel, switch to FreeBSD 13.0-rc1
+- 2021-03-10: bug fixes, Mint-Y dark themes, new features: keyboard layout/variant selection, dialog, amd, intel, switch to FreeBSD 13.0-rc1
 - 2020-05-02: refactoring, printf, new feature: tmpfs directory
 - 2020-03-27: DarkMate 12.1 release, switch to FreeBSD 12.1
 - 2019-03-29: first DarkMate release, switch to FreeBSD 12
