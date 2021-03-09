@@ -51,7 +51,7 @@ The custom wallpapers can be found in */usr/local/share/backgrounds/fbsd*
 ![PIC Desktop](Screenshots/dm121c.png)
 
 ## YouTube tutorial for previos version 12.x (click image to play)
-[![Watch the video](https://img.youtube.com/vi/vMzE63z6yLk/maxresdefault.jpg)](https://youtu.be/vMzE63z6yLk)
+<a href="https://youtu.be/vMzE63z6yLk" target="_blank"><img src="https://img.youtube.com/vi/vMzE63z6yLk/maxresdefault.jpg" width=350 alt="yt link" /></a>
 
 ## Untested
 - My hardware selection is limited. Only current nVidia drivers and AMDGPU are tested. If you have older hardware and/or intel graphics, please let me know if/how it works.
