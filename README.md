@@ -70,7 +70,7 @@ The custom wallpapers can be found in */usr/local/share/backgrounds/fbsd*
 - 2018-01-02: Initial release for FreeBSD 10/11
 
 ## Credits
-- dialog by invisible island https://invisible-island.net/dialog/
+- dialog by Thomas E. Dickey https://invisible-island.net/dialog/
 - icon theme is PAPIRUS https://github.com/PapirusDevelopmentTeam/papirus-icon-theme
 - desktop theming guide by olivierd https://forums.freebsd.org/threads/gschema-override-not-holding.69973/#post-422183
 - Arc Grey Theme avaialble on https://github.com/pinpox/arc-grey-theme, retrieved from https://www.gnome-look.org/p/1135255/
