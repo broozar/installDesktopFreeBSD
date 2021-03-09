@@ -1,16 +1,16 @@
-# DarkMate 12.1
-desktop install script for FreeBSD 12.1
+# DarkMate 13.0
+desktop install script for FreeBSD
 
 ## About
-This script helps you set up a desktop system on top of FreeBSD 12.1. It will install PKG, X, MATE, SLiM, some additional tools and set up a 'wheel video' user.
+This script helps you set up a desktop system on top of FreeBSD 13.0. It will install PKG, X, MATE, SLiM, some additional tools and set up a 'wheel video' user.
 
 ## Usage
-1. Install a minimal image of FreeBSD 12.1 *with sources*, but do not create any additional users.
+1. Install a minimal image of FreeBSD 13.0 *with sources*, but do not create any additional users.
 2. Boot your new FreeBSD system and log in as root.
 3. Navigate to yout TMP directory, fetch the install script from GitHub, and run it:
 ```
 $ cd /tmp
-$ fetch --no-verify-peer http://trisymphony.com/darkMate -o dm.sh
+$ fetch --no-verify-peer http://trisymphony.com/darkMate13 -o dm.sh
 $ chmod +x dm.sh
 $ ./dm.sh
 ```
@@ -20,10 +20,11 @@ $ ./dm.sh
 You can launch the script with additional parmeters:
 
 -x skips the Xorg installation<br />
--u forces freebsd-update
+-u forces freebsd-update<br />
+-d skips the new dialog UI
 
 ## Keyboard codes
-The script will ask you to define your keyboard layout. If you go with the defaults, you will be getting the standard US layout. A full list of language and variant codes can be found here: https://unix.stackexchange.com/questions/43976/list-all-valid-kbd-layouts-variants-and-toggle-options-to-use-with-setxkbmap
+If you do not use the new dialog UI, the script will ask you to define your keyboard layout. If you go with the defaults, you will be getting the standard US layout. A full list of language and variant codes can be found here: https://unix.stackexchange.com/questions/43976/list-all-valid-kbd-layouts-variants-and-toggle-options-to-use-with-setxkbmap
 
 The layout can be changed later at any point. 
 - For MATE, simply navigate to the Keyboard Settings. 
@@ -49,24 +50,19 @@ The custom wallpapers can be found in */usr/local/share/backgrounds/fbsd*
 ### Alternative red wallpaper
 ![PIC Desktop](Screenshots/dm121c.png)
 
-## YouTube tutorial (click image to play)
+## YouTube tutorial for previos version 12.x (click image to play)
 [![Watch the video](https://img.youtube.com/vi/vMzE63z6yLk/maxresdefault.jpg)](https://youtu.be/vMzE63z6yLk)
 
-## Known issues
-- Keyboard layouts and variants are not checked for validity. Potential input problems with the new udev changes in FreeBSD.
+## Untested
+- My hardware selection is limited. Only current nVidia drivers and AMDGPU are tested. If you have older hardware and/or intel graphics, please let me know if/how it works.
 
 ## Differences to previous version
-- Version 12.1 cuts out all optional desktop software that was previously asked about in 12.0. To install software like GIMP, Blender or Audacity, please use pkg after you have rebooted the system.
-- Major refactoring: The script code has been cleaned up and should be easier to follow. 
-- External data like config files, screenshots etc. has been moved to separate files which will be downloaded from GitHub as needed.
-- Experimental Nvidia driver support.
-- Even more custom theming, including SLiM.
-- New predefined keyboard shortcuts.
-- Java installer with NetBeans config.
-- Rules for PolicyKit restoring reboot/shutdown from MATE.
-- License change from MIT to GPL v3 because of the new components used.
+- dialog UI is the new default
+- graphics support for AMD and Intel
+- almost all config files are pulled out of the script and have been put on github as separate files, which will be downloaded as needed
 
 ## Changelog
+- 2021-03-10: refactoring, improved theme, new features: dialog, amd, intel
 - 2020-05-02: refactoring, printf, new feature: tmpfs directory
 - 2020-03-27: DarkMate 12.1 release, switch to FreeBSD 12.1
 - 2019-03-29: first DarkMate release, switch to FreeBSD 12
@@ -74,6 +70,7 @@ The custom wallpapers can be found in */usr/local/share/backgrounds/fbsd*
 - 2018-01-02: Initial release for FreeBSD 10/11
 
 ## Credits
+- dialog by invisible island https://invisible-island.net/dialog/
 - icon theme is PAPIRUS https://github.com/PapirusDevelopmentTeam/papirus-icon-theme
 - desktop theming guide by olivierd https://forums.freebsd.org/threads/gschema-override-not-holding.69973/#post-422183
 - Arc Grey Theme avaialble on https://github.com/pinpox/arc-grey-theme, retrieved from https://www.gnome-look.org/p/1135255/
