@@ -50,7 +50,7 @@ The custom wallpapers can be found in */usr/local/share/backgrounds/fbsd*
 ### Alternative red wallpaper
 ![PIC Desktop](Screenshots/dm121c.png)
 
-## YouTube tutorial for previos version 12.x (click image to play)
+## YouTube tutorial for previous version 12.x (click image to play)
 <a href="https://youtu.be/vMzE63z6yLk" target="_blank"><img src="https://img.youtube.com/vi/vMzE63z6yLk/maxresdefault.jpg" width=350 alt="yt link" /></a>
 
 ## Untested
