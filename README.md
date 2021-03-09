@@ -62,7 +62,7 @@ The custom wallpapers can be found in */usr/local/share/backgrounds/fbsd*
 - almost all config files are pulled out of the script and have been put on github as separate files, which will be downloaded as needed
 
 ## Changelog
-- 2021-03-10: refactoring, improved theme, new features: dialog, amd, intel
+- 2021-03-10: bug fixes, additional Linux Mint dark themes, new features: dialog, amd, intel, switch to FreeBSD 13.0-rc1
 - 2020-05-02: refactoring, printf, new feature: tmpfs directory
 - 2020-03-27: DarkMate 12.1 release, switch to FreeBSD 12.1
 - 2019-03-29: first DarkMate release, switch to FreeBSD 12
