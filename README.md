@@ -43,9 +43,6 @@ The custom wallpapers can be found in */usr/local/share/backgrounds/fbsd*
 ### Alternative red wallpaper
 ![PIC Desktop](Screenshots/dm121c.png)
 
-## YouTube tutorial for previous version 12.x (click image to play)
-<a href="https://youtu.be/vMzE63z6yLk" target="_blank"><img src="https://img.youtube.com/vi/vMzE63z6yLk/maxresdefault.jpg" width=350 alt="yt link" /></a>
-
 ## Keyboard codes without dialog
 If you do not use the new dialog UI, the script will ask you to define your keyboard layout. If you go with the defaults, you will be getting the standard US layout. A full list of language and variant codes can be found here: https://unix.stackexchange.com/questions/43976/list-all-valid-kbd-layouts-variants-and-toggle-options-to-use-with-setxkbmap
 
