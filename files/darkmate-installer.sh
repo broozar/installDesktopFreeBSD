@@ -162,6 +162,16 @@ _dit () {
 	echo ""
 }
 
+# msg to display when the video config download fails
+# $1 name of the driver
+_videofail () {
+	printf "[ ${CR}FAIL${NC} ]  Could not download $1 config file!\n"
+	_n "The graphics driver may not work. Continue? [y/N] "
+	if [ $? -q 0 ] ; then
+		_abort
+	fi
+}
+
 # ------------------------------------ other functions
 
 _abort () {
@@ -179,7 +189,7 @@ _abortmsg () {
 
 _anykey () {
 	echo ""
-	read -p "Press any key to continue..." disregard
+	read -p "Press Enter/Return to continue..." disregard
 	clear
 }
 
@@ -1116,31 +1126,23 @@ i_amd () {
 	cd /etc/X11/xorg.conf.d/
 	
 	if [ "$INST_VIDEO_AMDGPU" -eq 1 ] ; then
-		printf "[ ${CG}NOTE${NC} ]  Installing AMDGPU (current)\n\n"
+		_pih xf86-video-amdgpu "AMDGPU (current)"
 		if fetch --no-verify-peer ${REPO}config/20-amdgpu.conf ; then
 			chmod 755 ./20-amdgpu.conf
 			sysrc kld_list+="amdgpu"
 			echo ""
 		else
-			printf "[ ${CR}FAIL${NC} ]  Could not download AMDGPU config file!\n"
-			_n "The graphics driver may not work. Continue? [y/N] "
-			if [ $? -q 0 ] ; then
-				_abort
-			fi
+			_videofail "AMDGPU"
 		fi
 
 	elif [ "$INST_VIDEO_RADEON" -eq 1 ] ; then
-		printf "[ ${CG}NOTE${NC} ]  Installing RADEON (legacy)\n\n"
+		_pih xf86-video-ati "RADEON (legacy)"
 		if fetch --no-verify-peer ${REPO}config/20-radeon.conf ; then
 			chmod 755 ./20-radeon.conf
 			sysrc kld_list+="radeonkms"
 			echo ""
 		else
-			printf "[ ${CR}FAIL${NC} ]  Could not download RADEON config file!\n"
-			_n "The graphics driver may not work. Continue? [y/N] "
-			if [ $? -q 0 ] ; then
-				_abort
-			fi
+			_videofail "RADEON"
 		fi
 		
 	elif [ "$INST_VIDEO_RADEONHD" -eq 1 ] ; then
@@ -1152,35 +1154,27 @@ i_amd () {
 }
 i_amd
 
-i_intel () {
+i_intel () { # UNTESTED
 	cd /etc/X11/xorg.conf.d/
 	
 	if [ "$INST_VIDEO_INTEL_CURRENT" -eq 1 ] ; then
-		printf "[ ${CG}NOTE${NC} ]  Installing INTEL graphics (current)\n\n"
+		_pih xf86-video-intel "INTEL graphics (current)"
 		if fetch --no-verify-peer ${REPO}config/20-intelSB.conf ; then
 			chmod 755 ./20-intelSB.conf
 			sysrc kld_list+="i915kms"
 			echo ""
 		else
-			printf "[ ${CR}FAIL${NC} ]  Could not download INTEL_SB config file!\n"
-			_n "The graphics driver may not work. Continue? [y/N] "
-			if [ $? -q 0 ] ; then
-				_abort
-			fi
+			_videofail "INTEL (current)"
 		fi
 
 	elif [ "$INST_VIDEO_INTEL_LEGACY" -eq 1 ] ; then
-		printf "[ ${CG}NOTE${NC} ]  Installing INTEL (legacy)\n\n"
+		_pih xf86-video-intel "INTEL graphics (legacy)"
 		if fetch --no-verify-peer ${REPO}config/20-intel.conf ; then
 			chmod 755 ./20-intel.conf
 			sysrc kld_list+="i915kms"
 			echo ""
 		else
-			printf "[ ${CR}FAIL${NC} ]  Could not download INTEL config file!\n"
-			_n "The graphics driver may not work. Continue? [y/N] "
-			if [ $? -q 0 ] ; then
-				_abort
-			fi
+			_videofail "INTEL"
 		fi
 	
 	fi
