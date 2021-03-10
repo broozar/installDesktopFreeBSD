@@ -320,8 +320,7 @@ dia_kbd () {
 		if [ -z $DIA_RESULT ] ; then
 			_abortmsg "Keymap selection is required."
 		fi
-		# make upper case
-		KBD_LANG=$(echo $DIA_RESULT | tr '[a-z]' '[A-Z]')
+		KBD_LANG="$DIA_RESULT"
 
 		# only display variants if there are any
 		DIA_OPTIONS=$(eval "echo \$DIA_KBD_VAR_${KBD_LANG}")
@@ -1049,6 +1048,8 @@ i_vlc () {
 	if [ "$INST_VLC" -eq 1 ] ; then
 		printf "[ ${CG}NOTE${NC} ]  Installing VLC Media Player\n\n"
 		_pi vlc
+		printf "[ ${CG}NOTE${NC} ]  Installing Youtube-DL\n\n"
+		_pi youtube_dl
 	fi
 }
 i_vlc
