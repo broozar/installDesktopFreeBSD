@@ -132,6 +132,13 @@ _df () {
 	DIA_RESULT=$(dialog --clear --ok-label "Submit" --title "$2" --backtitle "$DIA_BACKTITLE" --form "$1" $DIA_OPT_HEIGHT $DIA_OPT_WIDTH $DIA_CHOICE_HEIGHT $DIA_OPTIONS 2>&1 > /dev/tty)
 }
 
+# automatic pkg install
+# $1 package name
+_pi () {
+	pkg install -y "$1"
+	echo ""
+}
+
 # ------------------------------------ other functions
 
 _abort () {
@@ -816,14 +823,10 @@ i_pkg () {
 i_xorg () {
 	if [ "$INST_XORG" -eq 1 ] ; then
 		printf "[ ${CG}NOTE${NC} ]  Installing XORG\n\n"
-		pkg install -y xorg
-		echo ""
-		
-		pkg install -y urwfonts
-		echo ""
-
-		pkg install -y mesa-demos
-		echo ""
+		_pi xorg
+		_pi urwfonts
+		_pi hack-font
+		_pi mesa-demos
 	fi
 }
 
@@ -836,16 +839,13 @@ i_xorg
 
 i_mate () {
 	printf "[ ${CG}NOTE${NC} ]  Installing MATE Desktop\n\n"
-	pkg install -y mate
-	echo ""
+	_pi mate
 	
 	printf "[ ${CG}NOTE${NC} ]  Installing Brisk Menu\n\n"
-	pkg install -y brisk-menu
-	echo ""
+	_pi brisk-menu
 
 	printf "[ ${CG}NOTE${NC} ]  Installing Arc Themes\n\n"
-	pkg install -y gtk-arc-themes
-	echo ""
+	_pi gtk-arc-themes
 	
 	printf "[ ${CG}NOTE${NC} ]  Installing Arc Dark Grey\n\n"
 	cd /tmp
@@ -897,8 +897,7 @@ i_mate () {
 	echo ""
 	
 	printf "[ ${CG}NOTE${NC} ]  Installing Papirus icons\n\n"
-	pkg install -y papirus-icon-theme
-	echo ""
+	_pi papirus-icon-theme
 
 	printf "[ ${CG}NOTE${NC} ]  Adding PolicyKit rules\n\n"	
 	cd /usr/local/share/polkit-1/rules.d
@@ -921,8 +920,7 @@ s_procfs () {
 
 i_slim () {
 	printf "[ ${CG}NOTE${NC} ]  Installing SLiM\n\n"
-	pkg install -y slim
-	echo ""
+	_pi slim
 	
 	cd /tmp
 	if fetch --no-verify-peer ${REPO}config/10-keyboard.conf ; then
@@ -1017,8 +1015,7 @@ fi
 i_firefox () {
 	if [ "$INST_Firefox" -eq 1 ] ; then
 		printf "[ ${CG}NOTE${NC} ]  Installing Firefox Browser\n\n"
-		pkg install -y firefox
-		echo ""
+		_pi firefox
 	fi
 }
 i_firefox
@@ -1042,10 +1039,8 @@ i_chrome
 i_mail () {
 	if [ "$INST_Thunderbird" -eq 1 ] ; then
 		printf "[ ${CG}NOTE${NC} ]  Installing Thunderbird\n\n"
-		pkg install -y thunderbird
-		echo ""
-		pkg install -y thunderbird-dictionaries
-		echo ""
+		_pi thunderbird
+		_pi thunderbird-dictionaries
 	fi
 }
 i_mail
@@ -1053,8 +1048,7 @@ i_mail
 i_vlc () {
 	if [ "$INST_VLC" -eq 1 ] ; then
 		printf "[ ${CG}NOTE${NC} ]  Installing VLC Media Player\n\n"
-		pkg install -y vlc
-		echo ""
+		_pi vlc
 	fi
 }
 i_vlc
@@ -1062,20 +1056,15 @@ i_vlc
 i_office () {
 	if [ "$INST_Office" -eq 1 ] ; then
 		printf "[ ${CG}NOTE${NC} ]  Installing LibreOffice\n\n"
-		pkg install -y libreoffice
-		echo ""
+		_pi libreoffice
 		
 		printf "[ ${CG}NOTE${NC} ]  Installing Xsane\n\n"
-		pkg install -y xsane
-		echo ""
+		_pi xsane
 
 		printf "[ ${CG}NOTE${NC} ]  Installing CUPS\n\n"
-		pkg install -y cups
-		echo ""
-		pkg install -y cups-pdf
-		echo ""
-		pkg install -y gutenprint
-		echo ""
+		_pi cups
+		_pi cups-pdf
+		_pi gutenprint
 	fi
 }
 i_office
@@ -1083,8 +1072,7 @@ i_office
 i_cpp () {
 	if [ "$INST_CPP" -eq 1 ] ; then
 		printf "[ ${CG}NOTE${NC} ]  Installing CodeLite IDE\n\n"
-		pkg install -y codelite
-		echo ""
+		_pi codelite
 	fi
 }
 i_cpp
@@ -1104,60 +1092,50 @@ i_java
 
 i_tools () {
 	printf "[ ${CG}NOTE${NC} ]  Installing additional tools\n\n----- NANO\n"
-	pkg install -y nano
+	_pi nano
 	
-	echo ""
 	echo "----- VIM"
-	pkg install -y vim
+	_pi vim
 
-	echo ""
 	echo "----- UNAR"
-	pkg install -y unar
+	_pi unar
 
-	echo ""
 	echo "----- SYSINFO"
-	pkg install -y sysinfo
+	_pi sysinfo
 
-	echo ""
 	echo "----- HTOP"
-	pkg install -y htop
+	_pi htop
 
 	cd /usr/local/bin
-	echo ""
 	echo "----- INXI"
 	fetch --no-verify-peer https://raw.githubusercontent.com/smxi/inxi/master/inxi
 	chmod 755 inxi
-	
 	echo ""
+	
 	echo "----- custom"
 	#fetch --no-verify-peer ${REPO}tools/cputemp.sh
 	#chmod 755 cputemp.sh
 	fetch --no-verify-peer ${REPO}tools/mate-dumpsettings.sh
 	chmod 755 mate-dumpsettings.sh
+	echo ""
 	
 	if [ "$INST_XORG" -eq 1 ] ; then
-		echo ""
 		echo "----- GEANY"
-		pkg install -y geany
+		_pi geany
 	fi
-	
-	echo ""
 }
 i_tools
 
 # ------------------------------------ drivers and boot
 
-pkg install -y drm-kmod
+_pi drm-kmod
 
 i_nvidia () {
 	if [ "$INST_VIDEO_NVIDIA_CUR" -eq 1 ] ; then
 		printf "[ ${CG}NOTE${NC} ]  Installing NVIDIA (current)\n\n"
-		pkg install -y nvidia-driver
-		echo ""
-		pkg install -y nvidia-xconfig
-		echo ""
-		pkg install -y nvidia-settings
-		echo ""
+		_pi nvidia-driver
+		_pi nvidia-xconfig
+		_pi nvidia-settings
 		
 		# run autoconfig
 		nvidia-xconfig
@@ -1165,18 +1143,15 @@ i_nvidia () {
 
 	elif [ "$INST_VIDEO_NVIDIA_390" -eq 1 ] ; then
 		printf "[ ${CG}NOTE${NC} ]  Installing NVIDIA (legacy)\n\n"
-		pkg install -y nvidia-driver-390
-		echo ""
+		_pi nvidia-driver-390
 	
 	elif [ "$INST_VIDEO_NVIDIA_340" -eq 1 ] ; then
 		printf "[ ${CG}NOTE${NC} ]  Installing NVIDIA (old)\n\n"
-		pkg install -y nvidia-driver-340
-		echo ""
+		_pi nvidia-driver-340
 	
 	elif [ "$INST_VIDEO_NVIDIA_304" -eq 1 ] ; then
 		printf "[ ${CG}NOTE${NC} ]  Installing NVIDIA (ancient)\n\n"
-		pkg install -y nvidia-driver-304
-		echo ""
+		_pi nvidia-driver-304
 	fi
 	
 	# modify rc.conf for nvidia drivers
