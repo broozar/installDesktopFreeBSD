@@ -854,9 +854,9 @@ i_pkg () {
 i_xorg () {
 	if [ "$INST_XORG" -eq 1 ] ; then
 		_pih xorg "XORG"
-		_pih urwfonts "Fonts selection"
-		_pih hack-font "Terminal fonts"
-		_pih mesa-demos "GLX tools"
+		_pi urwfonts
+		_pi hack-font
+		_pi mesa-demos
 	fi
 }
 
@@ -1016,7 +1016,7 @@ i_chrome
 i_mail () {
 	if [ "$INST_Thunderbird" -eq 1 ] ; then
 		_pih thunderbird "Tunderbird mail"
-		_pih thunderbird-dictionaries "Tunderbird dictionaries"
+		_pi thunderbird-dictionaries
 	fi
 }
 i_mail
@@ -1032,11 +1032,10 @@ i_vlc
 i_office () {
 	if [ "$INST_Office" -eq 1 ] ; then
 		_pih libreoffice "LibreOffice"
-		_pih xsane "Xsane"
-
-		_pih cups "CUPS"
-		_pih cups-pdf "CUPS-PDF"
-		_pih gutenprint "Gutenprint"
+		_pi xsane
+		_pi cups
+		_pi cups-pdf
+		_pi gutenprint
 	fi
 }
 i_office
@@ -1061,11 +1060,12 @@ i_java
 # ------------------------------------ automatically selected software
 
 i_tools () {
-	_pih nano "NANO"
-	_pih vim "VIM"
-	_pih unar "UNAR"
-	_pih sysinfo "SYSINFO"
-	_pih htop "HTOP"
+	printf "[ ${CG}NOTE${NC} ]  Installing tools\n\n"
+	_pi nano
+	_pi vim
+	_pi unar
+	_pi sysinfo
+	_pi htop
 
 	cd /usr/local/bin
 	fetch --no-verify-peer https://raw.githubusercontent.com/smxi/inxi/master/inxi
@@ -1080,7 +1080,7 @@ i_tools () {
 	echo ""
 	
 	if [ "$INST_XORG" -eq 1 ] ; then
-		_pih geany "Geany"
+		_pi geany
 	fi
 }
 i_tools
@@ -1092,8 +1092,8 @@ _pi drm-kmod
 i_nvidia () {
 	if [ "$INST_VIDEO_NVIDIA_CUR" -eq 1 ] ; then
 		_pih nvidia-driver "NVIDIA driver (current)"
-		_pih nvidia-xconfig "NVIDIA xconfig"
-		_pih nvidia-settings "NVIDIA settings application"
+		_pi nvidia-xconfig
+		_pi nvidia-settings
 		
 		# run autoconfig
 		nvidia-xconfig
