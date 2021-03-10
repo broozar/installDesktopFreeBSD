@@ -533,19 +533,18 @@ else
 	_n "Do you want to install drivers for nVidia GPUs? [y/N] "
 	if [ "$?" -eq 1 ] ; then
 		video_nvidia
-		return 0
-	fi
-
-	_n "Do you want to install drivers for AMD GPUs? [y/N] "
-	if [ "$?" -eq 1 ] ; then
-		video_amd
-		return 0
-	fi
-
-	_n "Do you want to install drivers for Intel GPUs? [y/N] "
-	if [ "$?" -eq 1 ] ; then
-		video_intel
-		return 0
+	
+	else
+		_n "Do you want to install drivers for AMD GPUs? [y/N] "
+		if [ "$?" -eq 1 ] ; then
+			video_amd
+		
+		else
+			_n "Do you want to install drivers for Intel GPUs? [y/N] "
+			if [ "$?" -eq 1 ] ; then
+				video_intel
+			fi
+		fi
 	fi
 fi
 
