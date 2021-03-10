@@ -139,6 +139,29 @@ _pi () {
 	echo ""
 }
 
+# automatic pkg install with notification header
+# $1 package name $2 notification text
+_pih () {
+	printf "[ ${CG}NOTE${NC} ]  Installing $2\n\n"
+	pkg install -y "$1"
+	echo ""
+}
+
+# download and install theme from github repo
+# $1 theme name $2 extension
+_dit () {
+	printf "[ ${CG}NOTE${NC} ]  Installing $1\n\n"
+	THEME="$1"
+	EXT="$2"
+	cd /tmp
+	if fetch --no-verify-peer ${REPO}themes/${THEME}.${EXT} ; then
+		tar xf ${THEME}.${EXT} -C /usr/local/share/themes
+		chmod -R 755 /usr/local/share/themes/${THEME}
+		rm ${THEME}.${EXT}
+	fi
+	echo ""
+}
+
 # ------------------------------------ other functions
 
 _abort () {
@@ -821,11 +844,10 @@ i_pkg () {
 
 i_xorg () {
 	if [ "$INST_XORG" -eq 1 ] ; then
-		printf "[ ${CG}NOTE${NC} ]  Installing XORG\n\n"
-		_pi xorg
-		_pi urwfonts
-		_pi hack-font
-		_pi mesa-demos
+		_pih xorg "XORG"
+		_pih urwfonts "Fonts selection"
+		_pih hack-font "Terminal fonts"
+		_pih mesa-demos "GLX tools"
 	fi
 }
 
@@ -837,66 +859,17 @@ i_xorg
 # ------------------------------------ MATE
 
 i_mate () {
-	printf "[ ${CG}NOTE${NC} ]  Installing MATE Desktop\n\n"
-	_pi mate
+	_pih mate "MATE Desktop"
+	_pih brisk-menu "Brisk Menu"
+	_pih gtk-arc-themes "Arc Themes"
 	
-	printf "[ ${CG}NOTE${NC} ]  Installing Brisk Menu\n\n"
-	_pi brisk-menu
-
-	printf "[ ${CG}NOTE${NC} ]  Installing Arc Themes\n\n"
-	_pi gtk-arc-themes
+	_dit "Arc-Dark-Grey" "tar.xz"
+	_dit "Mint-Y-Dark-Aqua" "zip"
+	_dit "Mint-Y-Dark-Grey" "zip"
+	_dit "Mint-Y-Dark-Red" "zip"
+	_dit "Mint-Y-Dark-Teal" "zip"
 	
-	printf "[ ${CG}NOTE${NC} ]  Installing Arc Dark Grey\n\n"
-	cd /tmp
-	if fetch --no-verify-peer ${REPO}themes/Arc-Dark-Grey.tar.xz ; then
-		tar xf Arc-Dark-Grey.tar.xz -C /usr/local/share/themes
-		chmod -R 755 /usr/local/share/themes/Arc-Dark-Grey
-		rm Arc-Dark-Grey.tar.xz
-	fi
-	echo ""
-	
-	printf "[ ${CG}NOTE${NC} ]  Installing Mint-Y-Dark-Aqua\n\n"
-	THEME="Mint-Y-Dark-Aqua"
-	cd /tmp
-	if fetch --no-verify-peer ${REPO}themes/${THEME}.zip ; then
-		tar xf ${THEME}.zip -C /usr/local/share/themes
-		chmod -R 755 /usr/local/share/themes/${THEME}
-		rm ${THEME}.zip
-	fi
-	echo ""
-	
-	printf "[ ${CG}NOTE${NC} ]  Installing Mint-Y-Dark-Grey\n\n"
-	THEME="Mint-Y-Dark-Grey"
-	cd /tmp
-	if fetch --no-verify-peer ${REPO}themes/${THEME}.zip ; then
-		tar xf ${THEME}.zip -C /usr/local/share/themes
-		chmod -R 755 /usr/local/share/themes/${THEME}
-		rm ${THEME}.zip
-	fi
-	echo ""
-	
-	printf "[ ${CG}NOTE${NC} ]  Installing Mint-Y-Dark-Red\n\n"
-	THEME="Mint-Y-Dark-Red"
-	cd /tmp
-	if fetch --no-verify-peer ${REPO}themes/${THEME}.zip ; then
-		tar xf ${THEME}.zip -C /usr/local/share/themes
-		chmod -R 755 /usr/local/share/themes/${THEME}
-		rm ${THEME}.zip
-	fi
-	echo ""
-	
-	printf "[ ${CG}NOTE${NC} ]  Installing Mint-Y-Dark-Teal\n\n"
-	THEME="Mint-Y-Dark-Teal"
-	cd /tmp
-	if fetch --no-verify-peer ${REPO}themes/${THEME}.zip ; then
-		tar xf ${THEME}.zip -C /usr/local/share/themes
-		chmod -R 755 /usr/local/share/themes/${THEME}
-		rm ${THEME}.zip
-	fi
-	echo ""
-	
-	printf "[ ${CG}NOTE${NC} ]  Installing Papirus icons\n\n"
-	_pi papirus-icon-theme
+	_pih papirus-icon-theme "Papirus icons"
 
 	printf "[ ${CG}NOTE${NC} ]  Adding PolicyKit rules\n\n"	
 	cd /usr/local/share/polkit-1/rules.d
@@ -916,10 +889,8 @@ s_procfs () {
 }
 
 
-
 i_slim () {
-	printf "[ ${CG}NOTE${NC} ]  Installing SLiM\n\n"
-	_pi slim
+	_pih slim "SLiM"
 	
 	cd /tmp
 	if fetch --no-verify-peer ${REPO}config/10-keyboard.conf ; then
@@ -962,7 +933,7 @@ s_rcconf () {
 }
 
 t_mate () {
-	printf "[ ${CG}NOTE${NC} ]  Installing MATE theme\n\n"
+	printf "[ ${CG}NOTE${NC} ]  Installing MATE theme settings\n\n"
 	mkdir -p /usr/local/share/backgrounds/fbsd
 	chown root:wheel /usr/local/share/backgrounds/fbsd
 	chmod 775 /usr/local/share/backgrounds/fbsd
@@ -1013,16 +984,14 @@ fi
 
 i_firefox () {
 	if [ "$INST_Firefox" -eq 1 ] ; then
-		printf "[ ${CG}NOTE${NC} ]  Installing Firefox Browser\n\n"
-		_pi firefox
+		_pih firefox "Firefox Browser"
 	fi
 }
 i_firefox
 
 i_chrome () {
 	if [ "$INST_Chromium" -eq 1 ] ; then
-		printf "[ ${CG}NOTE${NC} ]  Installing Chromium Browser\n\n"
-		pkg install -y chromium
+		_pih chromium "Chromium Browser"
 		if grep -q kern.ipc.shm_allow_removed /etc/sysctl.conf ; then
 			sed -i ".bak" "s/kern.ipc.shm_allow_removed.*/kern.ipc.shm_allow_removed=1/" /etc/sysctl.conf
 		else
@@ -1037,51 +1006,42 @@ i_chrome
 
 i_mail () {
 	if [ "$INST_Thunderbird" -eq 1 ] ; then
-		printf "[ ${CG}NOTE${NC} ]  Installing Thunderbird\n\n"
-		_pi thunderbird
-		_pi thunderbird-dictionaries
+		_pih thunderbird "Tunderbird mail"
+		_pih thunderbird-dictionaries "Tunderbird dictionaries"
 	fi
 }
 i_mail
 
 i_vlc () {
 	if [ "$INST_VLC" -eq 1 ] ; then
-		printf "[ ${CG}NOTE${NC} ]  Installing VLC Media Player\n\n"
-		_pi vlc
-		printf "[ ${CG}NOTE${NC} ]  Installing Youtube-DL\n\n"
-		_pi youtube_dl
+		_pih vlc "VLC Media Player"
+		_pih youtube_dl "Youtube-DL"
 	fi
 }
 i_vlc
 
 i_office () {
 	if [ "$INST_Office" -eq 1 ] ; then
-		printf "[ ${CG}NOTE${NC} ]  Installing LibreOffice\n\n"
-		_pi libreoffice
-		
-		printf "[ ${CG}NOTE${NC} ]  Installing Xsane\n\n"
-		_pi xsane
+		_pih libreoffice "LibreOffice"
+		_pih xsane "Xsane"
 
-		printf "[ ${CG}NOTE${NC} ]  Installing CUPS\n\n"
-		_pi cups
-		_pi cups-pdf
-		_pi gutenprint
+		_pih cups "CUPS"
+		_pih cups-pdf "CUPS-PDF"
+		_pih gutenprint "Gutenprint"
 	fi
 }
 i_office
 
 i_cpp () {
 	if [ "$INST_CPP" -eq 1 ] ; then
-		printf "[ ${CG}NOTE${NC} ]  Installing CodeLite IDE\n\n"
-		_pi codelite
+		_pih codelite "CodeLite IDE"
 	fi
 }
 i_cpp
 
 i_java () {
 	if [ "$INST_Java" -eq 1 ] ; then
-		printf "[ ${CG}NOTE${NC} ]  Installing Netbeans IDE\n\n"
-		pkg install -y netbeans
+		_pih netbeans "Netbeans IDE"
 		cd /usr/local/netbeans*/etc
 		sed -i ".bak" 's/.*netbeans_jdkhome.*/netbeans_jdkhome=\"\/usr\/local\/openjdk8\"/' netbeans.conf
 		echo ""
@@ -1092,37 +1052,26 @@ i_java
 # ------------------------------------ automatically selected software
 
 i_tools () {
-	printf "[ ${CG}NOTE${NC} ]  Installing additional tools\n\n----- NANO\n"
-	_pi nano
-	
-	echo "----- VIM"
-	_pi vim
-
-	echo "----- UNAR"
-	_pi unar
-
-	echo "----- SYSINFO"
-	_pi sysinfo
-
-	echo "----- HTOP"
-	_pi htop
+	_pih nano "NANO"
+	_pih vim "VIM"
+	_pih unar "UNAR"
+	_pih sysinfo "SYSINFO"
+	_pih htop "HTOP"
 
 	cd /usr/local/bin
-	echo "----- INXI"
 	fetch --no-verify-peer https://raw.githubusercontent.com/smxi/inxi/master/inxi
 	chmod 755 inxi
 	echo ""
 	
-	echo "----- custom"
-	#fetch --no-verify-peer ${REPO}tools/cputemp.sh
-	#chmod 755 cputemp.sh
-	fetch --no-verify-peer ${REPO}tools/mate-dumpsettings.sh
-	chmod 755 mate-dumpsettings.sh
+	# custom tools
+	#fetch --no-verify-peer ${REPO}tools/cputemp
+	#chmod 755 cputemp
+	fetch --no-verify-peer ${REPO}tools/mate-dumpsettings
+	chmod 755 mate-dumpsettings
 	echo ""
 	
 	if [ "$INST_XORG" -eq 1 ] ; then
-		echo "----- GEANY"
-		_pi geany
+		_pih geany "Geany"
 	fi
 }
 i_tools
@@ -1133,26 +1082,22 @@ _pi drm-kmod
 
 i_nvidia () {
 	if [ "$INST_VIDEO_NVIDIA_CUR" -eq 1 ] ; then
-		printf "[ ${CG}NOTE${NC} ]  Installing NVIDIA (current)\n\n"
-		_pi nvidia-driver
-		_pi nvidia-xconfig
-		_pi nvidia-settings
+		_pih nvidia-driver "NVIDIA driver (current)"
+		_pih nvidia-xconfig "NVIDIA xconfig"
+		_pih nvidia-settings "NVIDIA settings application"
 		
 		# run autoconfig
 		nvidia-xconfig
 		echo ""
 
 	elif [ "$INST_VIDEO_NVIDIA_390" -eq 1 ] ; then
-		printf "[ ${CG}NOTE${NC} ]  Installing NVIDIA (legacy)\n\n"
-		_pi nvidia-driver-390
+		_pih nvidia-driver-390 "NVIDIA driver (legacy)"
 	
 	elif [ "$INST_VIDEO_NVIDIA_340" -eq 1 ] ; then
-		printf "[ ${CG}NOTE${NC} ]  Installing NVIDIA (old)\n\n"
-		_pi nvidia-driver-340
+		_pih nvidia-driver-340 "NVIDIA driver (old)"
 	
 	elif [ "$INST_VIDEO_NVIDIA_304" -eq 1 ] ; then
-		printf "[ ${CG}NOTE${NC} ]  Installing NVIDIA (ancient)\n\n"
-		_pi nvidia-driver-304
+		_pih nvidia-driver-304 "NVIDIA driver (ancient)"
 	fi
 	
 	# modify rc.conf for nvidia drivers
@@ -1251,7 +1196,7 @@ s_bootconf () {
 		echo "coretemp_load=\"YES\"" >> /boot/loader.conf
 	fi
 }
-#s_bootconf #not sure why this is here
+#s_bootconf #not sure why this is here - maybe for later implementation
 
 i_final () {
 	clear
