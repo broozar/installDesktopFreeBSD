@@ -35,7 +35,7 @@ FBSD_UPD=0			# fetch security patches only if requested
 INST_XORG=1			# needed for every desktop
 INST_MATE=1			# nice desktop environment
 
-KBD_LANG='US'		# keyboard layout (language)
+KBD_LANG='us'		# keyboard layout (language)
 KBD_VAR=''			# keyboard layout (variant)
 
 INST_Firefox=0		# free browser
@@ -1174,7 +1174,7 @@ i_intel () { # UNTESTED
 			sysrc kld_list+="i915kms"
 			echo ""
 		else
-			_videofail "INTEL"
+			_videofail "INTEL (legacy)"
 		fi
 	
 	fi
