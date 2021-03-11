@@ -253,6 +253,14 @@ c_overrides () {
 	done
 }
 
+c_uefimbr () {
+	R=$(sysctl machdep.bootmethod)
+	case "$R" in
+		*BIOS*)	printf "[ ${CG}INFO${NC} ]  Booted from BIOS\n" ;;
+		*) 		printf "[ ${CY}WARN${NC} ]  Booted from UEFI. Graphics drivers might not work!\n" ;;
+	esac
+}
+
 c_network () {
 	if nc -zw1 8.8.8.8 443 > /dev/null 2>&1 ; then
 		printf "[ ${CG}INFO${NC} ]  Internet connection detected\n"
@@ -267,6 +275,7 @@ c_root
 c_arch
 c_pkg
 c_overrides
+c_uefimbr
 c_network
 
 _anykey
@@ -939,6 +948,8 @@ s_rcconf () {
 	if [ "$INST_Office" -eq 1 ] ; then
 		sysrc cupsd_enable="YES"
 	fi
+	
+	echo ""
 }
 
 t_mate () {
