@@ -55,6 +55,7 @@ INST_VIDEO_RADEON=0				# alternative AMD video driver
 INST_VIDEO_RADEONHD=0			# another alternative AMD video driver # UNUSED
 INST_VIDEO_INTEL_CURRENT=0		# Intel video driver >Sandy Bridge
 INST_VIDEO_INTEL_LEGACY=0		# Intel video driver <Sandy Bridge
+INST_VIDEO_KMOD=0				# kmod driver - probably requires manual adjustments after install
 
 USERGROUPS="wheel,video"		# default groups for new users. CUPS added later if office is installed
 
@@ -253,7 +254,7 @@ c_overrides () {
 	done
 }
 
-c_uefimbr () {
+c_biosefi () {
 	R=$(sysctl machdep.bootmethod)
 	case "$R" in
 		*BIOS*)	printf "[ ${CG}INFO${NC} ]  Booted from BIOS\n" ;;
@@ -275,7 +276,7 @@ c_root
 c_arch
 c_pkg
 c_overrides
-c_uefimbr
+c_biosefi
 c_network
 
 _anykey
@@ -514,7 +515,8 @@ dia_video_select () {
 				6 RADEON/ATI_old
 				7 Intel_current_SandyBridge+
 				8 Intel_old
-				9 Unknown/Default/Auto"
+				9 DRM-KMOD only
+				10 none/auto"
 	
 	_dm "Please select your graphics hardware:"
 	case $DIA_RESULT in
@@ -526,7 +528,8 @@ dia_video_select () {
 		6) INST_VIDEO_RADEON=1 ;;
 		7) INST_VIDEO_INTEL_CURRENT=1 ;;
 		8) INST_VIDEO_INTEL_LEGACY=1 ;;
-		9) ;;
+		9) INST_VIDEO_KMOD=1 ;;
+		10) ;;
 		*) _abort;;
 	esac
 }
@@ -1098,7 +1101,12 @@ i_tools
 
 # ------------------------------------ drivers and boot
 
-_pi drm-kmod
+i_kmod () {
+	_pih drm-kmod "DRM-KMOD driver"	
+}
+if [ INST_VIDEO_KMOD -eq 1 ] ; then
+	i_kmod
+fi
 
 i_nvidia () {
 	if [ "$INST_VIDEO_NVIDIA_CUR" -eq 1 ] ; then
@@ -1133,6 +1141,7 @@ i_nvidia () {
 i_nvidia
 
 i_amd () {
+	i_kmod
 	cd /etc/X11/xorg.conf.d/
 	
 	if [ "$INST_VIDEO_AMDGPU" -eq 1 ] ; then
@@ -1165,6 +1174,7 @@ i_amd () {
 i_amd
 
 i_intel () { # UNTESTED
+	i_kmod
 	cd /etc/X11/xorg.conf.d/
 	
 	if [ "$INST_VIDEO_INTEL_CURRENT" -eq 1 ] ; then
