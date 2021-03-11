@@ -5,14 +5,14 @@ desktop install script for FreeBSD
 This script helps you set up a desktop system on top of FreeBSD 13.0. It will install PKG, X, MATE, SLiM, some additional tools and set up a 'wheel video [cups]' user.
 
 ## Usage
-1. Install a minimal image of FreeBSD 13.0 *with sources*, but do not create any additional users.
+1. Install a minimal image of FreeBSD 13.0 in *Bios/MBR* mode (not UEFI), select *with sources* if you plan on using nVidia drivers, and *do not* create any additional users.
 2. Boot your new FreeBSD system and log in as root.
 3. Navigate to yout TMP directory, fetch the install script from GitHub, and run it:
 ```
 $ cd /tmp
-$ fetch --no-verify-peer http://trisymphony.com/darkMate13 -o dm.sh
-$ chmod +x dm.sh
-$ sh dm.sh
+$ fetch --no-verify-peer http://trisymphony.com/darkMate13
+$ chmod +x darkMate13
+$ sh darkMate13
 ```
 4. Follow the instructions on screen. If you made a mistake, use CTRL+C to abort, then simply run the script again.
 
