@@ -661,14 +661,24 @@ s_tmpfs () {
 	else
 		mkdir /ramdisk && chmod 777 /ramdisk && ln -s /ramdisk /usr/share/skel && echo "tmpfs		/ramdisk		tmpfs	rw	0	0" >> /etc/fstab
 	fi	
+	
+	echo ""
 }
 
 s_skel () {
+	printf "[ ${CG}NOTE${NC} ]  Creating SKEL structure\n\n"
+	
 	# home subfolders
 	mkdir /usr/share/skel/Documents
 	mkdir /usr/share/skel/Downloads
 	mkdir /usr/share/skel/Media
 	mkdir /usr/share/skel/Programming
+	
+	# core dump location
+	LOC=/var/coredump
+	mkdir ${LOC} && chmod 755 ${LOC}
+	sysctl kern.corefile=${LOC}%N.core
+	ln -s ${LOC} /usr/share/skel/Programming
 
 	# MATE startup
 	touch /usr/share/skel/dot.xinitrc
@@ -683,7 +693,9 @@ s_skel () {
 	" > /usr/share/skel/dot.config/gtk-3.0/gtk.css
 
 	# rights
-	chown -R root:wheel /usr/share/skel 
+	chown -R root:wheel /usr/share/skel
+	
+	echo ""
 }
 
 ## CLI
@@ -909,8 +921,11 @@ s_procfs () {
 	fi
 }
 
-
 i_slim () {
+	# future alternative?
+	# pkg install lightdm lightdm-gtk-greeter lightdm-gtk-greeter-settings
+	# sysrc lightdm_enable=YES
+	
 	_pih slim "SLiM"
 	
 	cd /tmp
