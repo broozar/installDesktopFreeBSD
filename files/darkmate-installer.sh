@@ -55,7 +55,9 @@ INST_VIDEO_RADEON=0				# alternative AMD video driver
 INST_VIDEO_RADEONHD=0			# another alternative AMD video driver # UNUSED
 INST_VIDEO_INTEL_CURRENT=0		# Intel video driver >Sandy Bridge
 INST_VIDEO_INTEL_LEGACY=0		# Intel video driver <Sandy Bridge
-INST_VIDEO_KMOD=0				# kmod driver - probably requires manual adjustments after install
+INST_VIDEO_KMOD_AMDGPU=0		# kmod driver - AMDGPU module
+INST_VIDEO_KMOD_RADEON=0		# kmod driver - RADEON module
+INST_VIDEO_KMOD_INTEL=0			# kmod driver - INTEL module
 
 USERGROUPS="wheel,video"		# default groups for new users. CUPS added later if office is installed
 
@@ -464,42 +466,116 @@ fi
 
 ## CLI
 
-video_nvidia () {
+VSELECTED=0
+
+video_nvidia_cur () {
+	if [ $VSELECTED -eq 1 ] ; then
+		return 0
+	fi
+	
 	_n "Install NVidia-current drivers (GeForce 600 and later)? [y/N] "
 	INST_VIDEO_NVIDIA_CUR=$?
-
-	if [ "$INST_VIDEO_NVIDIA_CUR" -eq 0 ] ; then
-		_n "Install NVidia-legacy drivers instead (v390)? [y/N] "
-		INST_VIDEO_NVIDIA_390=$?
-	fi
-	if [ "$INST_VIDEO_NVIDIA_CUR" -eq 0 -a "$INST_VIDEO_NVIDIA_390" -eq 0 ] ; then
-		_n "Install NVidia-old drivers instead (v340)? [y/N] "
-		INST_VIDEO_NVIDIA_340=$?
-	fi
-	if [ "$INST_VIDEO_NVIDIA_CUR" -eq 0 -a "$INST_VIDEO_NVIDIA_390" -eq 0 -a "$INST_VIDEO_NVIDIA_340" -eq 0 ] ; then
-		_n "Install NVidia-ancient drivers instead (v304)? [y/N] "
-		INST_VIDEO_NVIDIA_304=$?
-	fi
+	VSELECTED=$INST_VIDEO_NVIDIA_CUR
 }
 
-video_amd () {
+video_nvidia_390 () {
+	if [ $VSELECTED -eq 1 ] ; then
+		return 0
+	fi
+	
+	_n "Install NVidia-legacy drivers instead (v390)? [y/N] "
+	INST_VIDEO_NVIDIA_390=$?
+	VSELECTED=$INST_VIDEO_NVIDIA_390
+}
+
+video_nvidia_340 () {
+	if [ $VSELECTED -eq 1 ] ; then
+		return 0
+	fi
+	
+	_n "Install NVidia-old drivers instead (v340)? [y/N] "
+	INST_VIDEO_NVIDIA_340=$?
+	VSELECTED=$INST_VIDEO_NVIDIA_340
+}
+
+video_nvidia_304 () {
+	if [ $VSELECTED -eq 1 ] ; then
+		return 0
+	fi
+	
+	_n "Install NVidia-ancient drivers instead (v304)? [y/N] "
+	INST_VIDEO_NVIDIA_304=$?
+	VSELECTED=$INST_VIDEO_NVIDIA_304
+}
+
+video_amdgpu () {
+	if [ $VSELECTED -eq 1 ] ; then
+		return 0
+	fi
+	
 	_n "Install AMDGPU drivers? [y/N] "
 	INST_VIDEO_AMDGPU=$?
+	VSELECTED=$INST_VIDEO_AMDGPU
+}
 
-	if [ "$INST_VIDEO_AMDGPU" -eq 0 ] ; then
-		_n "Install RADEON drivers instead ()? [y/N] "
-		INST_VIDEO_RADEON=$?
+video_radeon () {
+	if [ $VSELECTED -eq 1 ] ; then
+		return 0
 	fi
+	
+	_n "Install RADEON drivers instead ()? [y/N] "
+	INST_VIDEO_RADEON=$?
+	VSELECTED=$INST_VIDEO_RADEON
+}
+
+video_intelsb () {
+	if [ $VSELECTED -eq 1 ] ; then
+		return 0
+	fi
+	
+	_n "Install INTEL drivers (Sandy Bridge and later)? [y/N] "
+	INST_VIDEO_INTEL_CURRENT=$?
+	VSELECTED=$INST_VIDEO_INTEL_CURRENT
 }
 
 video_intel () {
-	_n "Install INTEL drivers (Sandy Bridge and later)? [y/N] "
-	INST_VIDEO_INTEL_CURRENT=$?
-
-	if [ "$INST_VIDEO_INTEL_CURRENT" -eq 0 ] ; then
-		_n "Install INTEL-legacy drivers instead? [y/N] "
-		INST_VIDEO_INTEL_LEGACY=$?
+	if [ $VSELECTED -eq 1 ] ; then
+		return 0
 	fi
+	
+	_n "Install INTEL-legacy drivers instead? [y/N] "
+	INST_VIDEO_INTEL_LEGACY=$?
+	VSELECTED=$INST_VIDEO_INTEL_LEGACY
+}
+
+video_kmod_amdgpu () {
+	if [ $VSELECTED -eq 1 ] ; then
+		return 0
+	fi
+	
+	_n "Install only AMDGPU DRM-KMOD? [y/N] "
+	INST_VIDEO_KMOD_AMDGPU=$?
+	VSELECTED=$INST_VIDEO_KMOD_AMDGPU
+}
+
+video_kmod_radeon () {
+	if [ $VSELECTED -eq 1 ] ; then
+		return 0
+	fi
+	
+	_n "Install only RADEON DRM-KMOD instead? [y/N] "
+	INST_VIDEO_KMOD_RADEON=$?
+	VSELECTED=$INST_VIDEO_KMOD_RADEON
+}
+
+video_kmod_intel () {
+	if [ $VSELECTED -eq 1 ] ; then
+		return 0
+	fi
+	
+	_n "Install only INTEL DRM-KMOD instead? [y/N] "
+	INST_VIDEO_KMOD_INTEL=$?
+	VSELECTED=$INST_VIDEO_KMOD_INTEL
 }
 
 ## DIALOG
@@ -515,8 +591,10 @@ dia_video_select () {
 				6 RADEON/ATI_old
 				7 Intel_current_SandyBridge+
 				8 Intel_old
-				9 DRM-KMOD only
-				10 none/auto"
+				9 KMOD_AMD_current
+				10 KMOD_RADEON_old
+				11 KMOD_INTEL
+				12 other/vesa"
 	
 	_dm "Please select your graphics hardware:"
 	case $DIA_RESULT in
@@ -528,8 +606,10 @@ dia_video_select () {
 		6) INST_VIDEO_RADEON=1 ;;
 		7) INST_VIDEO_INTEL_CURRENT=1 ;;
 		8) INST_VIDEO_INTEL_LEGACY=1 ;;
-		9) INST_VIDEO_KMOD=1 ;;
-		10) ;;
+		9) INST_VIDEO_KMOD_AMDGPU=1 ;;
+		10) INST_VIDEO_KMOD_RADEON=1 ;;
+		11) INST_VIDEO_KMOD_INTEL=1 ;;
+		12) ;;
 		*) _abort;;
 	esac
 }
@@ -542,22 +622,17 @@ else
 	printf "[ ${CG}INFO${NC} ]  Graphics drivers ${CY}(experimental)${NC} - Select a driver based on the\n"
 	printf "model of your card. Only the latest drivers support auto configuration!\n\n"
 	
-	_n "Do you want to install drivers for nVidia GPUs? [y/N] "
-	if [ "$?" -eq 1 ] ; then
-		video_nvidia
-	
-	else
-		_n "Do you want to install drivers for AMD GPUs? [y/N] "
-		if [ "$?" -eq 1 ] ; then
-			video_amd
-		
-		else
-			_n "Do you want to install drivers for Intel GPUs? [y/N] "
-			if [ "$?" -eq 1 ] ; then
-				video_intel
-			fi
-		fi
-	fi
+	video_nvidia_cur
+	video_nvidia_390
+	video_nvidia_340
+	video_nvidia_304
+	video_amdgpu
+	video_radeon
+	video_intelsb
+	video_intel
+	video_kmod_amdgpu
+	video_kmod_radeon
+	video_kmod_intel
 fi
 
 # ------------------------------------ confirmation
@@ -657,9 +732,12 @@ fi
 s_tmpfs () {
 	printf "[ ${CG}NOTE${NC} ]  Declaring tmpfs in /etc/fstab\n\n"
 	if grep -q tmpfs /etc/fstab ; then
-		printf "tmpfs entry already exists\n\n"
+		printf "tmpfs entry already exists\n"
 	else
-		mkdir /ramdisk && chmod 777 /ramdisk && ln -s /ramdisk /usr/share/skel && echo "tmpfs		/ramdisk		tmpfs	rw	0	0" >> /etc/fstab
+		LOC=/ramdisk
+		mkdir ${LOC} && chmod 777 ${LOC}
+		ln -s ${LOC} /usr/share/skel
+		echo "tmpfs		${LOC}		tmpfs	rw	0	0" >> /etc/fstab
 	fi	
 	
 	echo ""
@@ -1116,106 +1194,158 @@ i_tools
 
 # ------------------------------------ drivers and boot
 
-i_kmod () {
+## KMOD drivers
+
+i_kmod_amdgpu () {
 	_pih drm-kmod "DRM-KMOD driver"	
+	sysrc kld_list+="amdgpu"
 }
-if [ INST_VIDEO_KMOD -eq 1 ] ; then
-	i_kmod
+
+i_kmod_radeon () {
+	_pih drm-kmod "DRM-KMOD driver"	
+	sysrc kld_list+="radeonkms"
+}
+
+i_kmod_intel () {
+	_pih drm-kmod "DRM-KMOD driver"	
+	sysrc kld_list+="i915kms"
+}
+
+## XORG drivers
+
+i_amdgpu_x () {
+	cd /etc/X11/xorg.conf.d/
+	
+	i_kmod_amdgpu
+	_pih xf86-video-amdgpu "AMDGPU (current)"
+
+	if fetch --no-verify-peer ${REPO}config/20-amdgpu.conf ; then
+		chmod 755 ./20-amdgpu.conf
+		echo ""
+	else
+		_videofail "AMDGPU"
+	fi
+
+	cd /tmp
+}
+
+i_radeon_x () {
+	cd /etc/X11/xorg.conf.d/
+	
+	i_kmod_radeon
+	_pih xf86-video-ati "RADEON (legacy)"
+
+	if fetch --no-verify-peer ${REPO}config/20-radeon.conf ; then
+		chmod 755 ./20-radeon.conf
+		echo ""
+	else
+		_videofail "RADEON"
+	fi
+
+	cd /tmp
+}
+
+i_intelsb_x () {
+	# TODO - untested
+	cd /etc/X11/xorg.conf.d/
+	
+	i_kmod_intel
+	_pih xf86-video-intel "INTEL graphics (current)"
+	
+	if fetch --no-verify-peer ${REPO}config/20-intelSB.conf ; then
+		chmod 755 ./20-intelSB.conf
+		echo ""
+	else
+		_videofail "INTEL (current)"
+	fi
+
+	cd /tmp
+}
+
+i_intel_x () {
+	# TODO - untested
+	cd /etc/X11/xorg.conf.d/
+	
+	i_kmod_intel
+	_pih xf86-video-intel "INTEL graphics (legacy)"
+	
+	if fetch --no-verify-peer ${REPO}config/20-intel.conf ; then
+		chmod 755 ./20-intel.conf
+		echo ""
+	else
+		_videofail "INTEL (legacy)"
+	fi
+
+	cd /tmp
+}
+
+## PROPRIETARY drivers
+
+i_nvidia_cur () {
+	_pih nvidia-driver "NVIDIA driver (current)"
+	_pi nvidia-xconfig
+	_pi nvidia-settings
+	
+	# run autoconfig
+	nvidia-xconfig
+	echo ""
+	
+	sysrc kld_list+="nvidia-modeset"
+	sysrc kld_list+="nvidia"
+}
+
+i_nvidia_390 () {
+	_pih nvidia-driver-390 "NVIDIA driver (legacy)"
+	
+	sysrc kld_list+="nvidia-modeset"
+	sysrc kld_list+="nvidia"
+}
+
+i_nvidia_340 () {
+	_pih nvidia-driver-340 "NVIDIA driver (old)"
+	
+	sysrc kld_list+="nvidia"
+}
+
+i_nvidia_304 () {
+	_pih nvidia-driver-304 "NVIDIA driver (ancient)"
+	
+	sysrc kld_list+="nvidia"
+}
+
+## RUN
+
+if [ "$INST_VIDEO_NVIDIA_CUR" -eq 1 ] ; then
+	i_nvidia_cur
+elif [ "$INST_VIDEO_NVIDIA_390" -eq 1 ] ; then
+	i_nvidia_390
+elif [ "$INST_VIDEO_NVIDIA_340" -eq 1 ] ; then
+	i_nvidia_340
+elif [ "$INST_VIDEO_NVIDIA_304" -eq 1 ] ; then
+	i_nvidia_304
+
+elif [ "$INST_VIDEO_AMDGPU" -eq 1 ] ; then
+	i_amdgpu_x
+elif [ "$INST_VIDEO_RADEON" -eq 1 ] ; then
+	i_radeon_x
+elif [ "$INST_VIDEO_RADEONHD" -eq 1 ] ; then
+	printf "[ ${CY}NOTE${NC} ]  RADEONHD driver is not supported\n"
+	echo ""
+	
+elif [ "$INST_VIDEO_INTEL_CURRENT" -eq 1 ] ; then
+	i_intelsb_x
+elif [ "$INST_VIDEO_INTEL_LEGACY" -eq 1 ] ; then
+	i_intel_x
+	
+elif [ "$INST_VIDEO_KMOD_AMDGPU" -eq 1 ] ; then
+	i_kmod_amdgpu
+elif [ "$INST_VIDEO_KMOD_RADEON" -eq 1 ] ; then
+	i_kmod_radeon
+elif [ "$INST_VIDEO_KMOD_INTEL" -eq 1 ] ; then
+	i_kmod_intel
+	
 fi
 
-i_nvidia () {
-	if [ "$INST_VIDEO_NVIDIA_CUR" -eq 1 ] ; then
-		_pih nvidia-driver "NVIDIA driver (current)"
-		_pi nvidia-xconfig
-		_pi nvidia-settings
-		
-		# run autoconfig
-		nvidia-xconfig
-		echo ""
-
-	elif [ "$INST_VIDEO_NVIDIA_390" -eq 1 ] ; then
-		_pih nvidia-driver-390 "NVIDIA driver (legacy)"
-	
-	elif [ "$INST_VIDEO_NVIDIA_340" -eq 1 ] ; then
-		_pih nvidia-driver-340 "NVIDIA driver (old)"
-	
-	elif [ "$INST_VIDEO_NVIDIA_304" -eq 1 ] ; then
-		_pih nvidia-driver-304 "NVIDIA driver (ancient)"
-	fi
-	
-	# modify rc.conf for nvidia drivers
-	
-	if [ "$INST_VIDEO_NVIDIA_CUR" -eq 1 -o "$INST_VIDEO_NVIDIA_390" -eq 1 ] ; then
-		sysrc kld_list+="nvidia-modeset"
-		sysrc kld_list+="nvidia"
-				
-	elif [ "$INST_VIDEO_NVIDIA_340" -eq 1 -o "$INST_VIDEO_NVIDIA_304" -eq 1 ] ; then
-		sysrc kld_list+="nvidia"
-	fi	
-}
-i_nvidia
-
-i_amd () {
-	i_kmod
-	cd /etc/X11/xorg.conf.d/
-	
-	if [ "$INST_VIDEO_AMDGPU" -eq 1 ] ; then
-		_pih xf86-video-amdgpu "AMDGPU (current)"
-		if fetch --no-verify-peer ${REPO}config/20-amdgpu.conf ; then
-			chmod 755 ./20-amdgpu.conf
-			sysrc kld_list+="amdgpu"
-			echo ""
-		else
-			_videofail "AMDGPU"
-		fi
-
-	elif [ "$INST_VIDEO_RADEON" -eq 1 ] ; then
-		_pih xf86-video-ati "RADEON (legacy)"
-		if fetch --no-verify-peer ${REPO}config/20-radeon.conf ; then
-			chmod 755 ./20-radeon.conf
-			sysrc kld_list+="radeonkms"
-			echo ""
-		else
-			_videofail "RADEON"
-		fi
-		
-	elif [ "$INST_VIDEO_RADEONHD" -eq 1 ] ; then
-		printf "[ ${CG}NOTE${NC} ]  RADEONHD driver is not supported\n"
-		echo ""
-		
-	fi
-	cd /tmp
-}
-i_amd
-
-i_intel () { # UNTESTED
-	i_kmod
-	cd /etc/X11/xorg.conf.d/
-	
-	if [ "$INST_VIDEO_INTEL_CURRENT" -eq 1 ] ; then
-		_pih xf86-video-intel "INTEL graphics (current)"
-		if fetch --no-verify-peer ${REPO}config/20-intelSB.conf ; then
-			chmod 755 ./20-intelSB.conf
-			sysrc kld_list+="i915kms"
-			echo ""
-		else
-			_videofail "INTEL (current)"
-		fi
-
-	elif [ "$INST_VIDEO_INTEL_LEGACY" -eq 1 ] ; then
-		_pih xf86-video-intel "INTEL graphics (legacy)"
-		if fetch --no-verify-peer ${REPO}config/20-intel.conf ; then
-			chmod 755 ./20-intel.conf
-			sysrc kld_list+="i915kms"
-			echo ""
-		else
-			_videofail "INTEL (legacy)"
-		fi
-	
-	fi
-	cd /tmp
-}
-i_intel
 
 s_bootconf () {
 	printf "[ ${CG}NOTE${NC} ]  Configuring boot/loader.conf\n\n"
