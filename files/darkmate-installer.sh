@@ -291,7 +291,7 @@ _anykey
 ## CLI
 
 pkg_mirror () {
-	read -p "PKG Mirror: What is your location? 1:EU, 2:US-East, 3:US-West, 0:Other [0] " response
+	read -p "PKG Mirror: What is your location? 0:Automatic, 1:EU, 2:US-East, 3:US-West [0] " response
 	if [ "$response" = "1" ] ; then
 		MIRR_PKG='eu.'
 	elif [ "$response" = "2" ] ; then
@@ -306,17 +306,16 @@ pkg_mirror () {
 ## DIALOG
 
 dia_pkg_mirror () {
-		DIA_OPTIONS="1 EU
-        2 US-East
-        3 US-West
-        4 Other/Default/Unknown"
+		DIA_OPTIONS="1 Automatic
+		2 EU
+        3 US-East
+        4 US-West"
 	
-	_dm "Please select your nearest download server:"	
+	_dm "Please select your nearest download server:" "PKG Mirror"
 	case $DIA_RESULT in
-		0) _abort ;;
-		1) MIRR_PKG='eu.' ;;
-		2) MIRR_PKG='us-east.' ;;
-		3) MIRR_PKG='us-west.' ;;
+		2) MIRR_PKG='eu.' ;;
+		3) MIRR_PKG='us-east.' ;;
+		4) MIRR_PKG='us-west.' ;;
 		*) MIRR_PKG='' ;;
 	esac
 }
