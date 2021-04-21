@@ -2,7 +2,7 @@
 desktop install script for FreeBSD
 
 ## About
-This script helps you set up a desktop system on top of FreeBSD 13.0. It will install PKG, X, MATE, SLiM, some additional tools and set up a 'wheel video [cups]' user.
+This script helps you set up a desktop system on top of FreeBSD 13.0. It will install PKG, X, MATE, a login manager, some additional tools and set up a 'wheel video [cups]' user.
 
 ## Usage
 1. Install a minimal image of FreeBSD 13.0 in *Bios/MBR* mode (not UEFI), select *with sources* if you plan on using nVidia drivers, and *do not* create any additional users.
