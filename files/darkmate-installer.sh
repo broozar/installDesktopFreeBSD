@@ -3,7 +3,7 @@
 # DarkMate Desktop for FreeBSD
 # by Felix Caffier
 # http://www.trisymphony.com
-# rev. 2021-03-10 with dialog UI
+# rev. 2021-04-22 with lightdm
 
 # ----------------------------------------------------------------------
 # ------------------------------------ Notes
@@ -34,6 +34,9 @@ MIRR_PKG=''			# mirrors for PKG: 0 "", 1 "eu.", 2 "us-east.", 3 "us-west."
 FBSD_UPD=0			# fetch security patches only if requested
 INST_XORG=1			# needed for every desktop
 INST_MATE=1			# nice desktop environment
+
+INST_SLIM=0			# simple but abandoned login manager
+INST_LIGHTDM=0		# modern light-weight login manager
 
 KBD_LANG='us'		# keyboard layout (language)
 KBD_VAR=''			# keyboard layout (variant)
@@ -79,9 +82,9 @@ DIA_CHOICE_HEIGHT=7
 DIA_MSG_HEIGHT=7
 DIA_MSG_WIDTH=60
 DIA_RESULT=''	# results for menu, radiolist, checklist
-DIA_BACKTITLE="Backtitle here"
+DIA_BACKTITLE="Darkmate $VER Installer"
 DIA_OPTIONS="1 Option1
-				2 Option2 "
+	2 Option2 "
 
 # ------------------------------------ templates
 
@@ -205,7 +208,7 @@ _anykey () {
 clear
 printf "${CC}DarkMate setup script for FreeBSD ${VER}\nby Felix Caffier (http://www.trisymphony.com)${NC}\n\n"
 printf "This script will install PKG, X, the MATE desktop with theming, some optional\n"
-printf "Desktop software, SLiM, and set up users.\n\n"
+printf "Desktop software, a login manager, and set up users.\n\n"
 printf "If you made a mistake answering the questions, you can quit out\n"
 printf "of the installer by pressing ${CC}CTRL+C${NC} and then start again.\n\n"
 
@@ -353,15 +356,13 @@ kbd_read () {
 
 ## DIALOG
 
-DIA_BACKTITLE="Keyboard Layout"
-
 dia_kbd () {
 	cd /tmp
 	if fetch --no-verify-peer ${REPO}include/kbd_str.sh ; then
 		. /tmp/kbd_str.sh
 		
 		DIA_OPTIONS="$DIA_KBD_LANG"
-		_dm "Please select your keyboard layout:"
+		_dm "Please select your keyboard layout:" "Keyboard Layout"
 		if [ -z $DIA_RESULT ] ; then
 			_abortmsg "Keymap selection is required."
 		fi
@@ -370,9 +371,9 @@ dia_kbd () {
 		# only display variants if there are any
 		DIA_OPTIONS=$(eval "echo \$DIA_KBD_VAR_${KBD_LANG}")
 		if [ ! -z "$DIA_OPTIONS" ] ; then
-			_dn "Would you like to add a special variant of your keyboard (e.g. dvorak, nodeadkeys etc.)?"
+			_dn "Would you like to add a special variant of your keyboard (e.g. dvorak, nodeadkeys etc.)?" "Keyboard Variant"
 			if [ $? -eq 1 ] ; then
-				_dm "Please select your keyboard variant:"
+				_dm "Please select your keyboard variant:" "Keyboard Variant"
 				KBD_VAR="$DIA_RESULT"
 			fi
 		fi
@@ -428,8 +429,6 @@ inst_xsoft () {
 
 ## DIALOG
 
-DIA_BACKTITLE="Application selection"
-
 dia_inst_xsoft () {
 	# only install X software if X is being installed too
 	if [ "$INST_XORG" -eq 0 ] ; then
@@ -444,7 +443,7 @@ dia_inst_xsoft () {
         6 CodeLite/C++ on
         7 Netbeans/Java off"
 	
-	_dc "Please choose your X applications:"
+	_dc "Please choose your X applications:" "Application Selection"
 	case $DIA_RESULT in *1*) INST_Firefox=1 ;; esac
 	case $DIA_RESULT in *2*) INST_Chromium=1 ;; esac
 	case $DIA_RESULT in *3*) INST_Thunderbird=1 ;; esac
@@ -580,8 +579,6 @@ video_kmod_intel () {
 
 ## DIALOG
 
-DIA_BACKTITLE="Video driver"
-
 dia_video_select () {
 	DIA_OPTIONS="1 nVidia_current_GeForce600+
 				2 nVidia_legacy_v390
@@ -591,12 +588,12 @@ dia_video_select () {
 				6 RADEON/ATI_old
 				7 Intel_current_SandyBridge+
 				8 Intel_old
-				9 KMOD_AMD_current
+				9 KMOD_AMDGPU_current
 				10 KMOD_RADEON_old
 				11 KMOD_INTEL
 				12 other/vesa"
 	
-	_dm "Please select your graphics hardware:"
+	_dm "Please select your graphics hardware:" "Video driver"
 	case $DIA_RESULT in
 		1) INST_VIDEO_NVIDIA_CUR=1 ;;
 		2) INST_VIDEO_NVIDIA_390=1 ;;
@@ -635,6 +632,68 @@ else
 	video_kmod_intel
 fi
 
+
+# ------------------------------------ login manager
+
+## CLI
+
+LSELECTED=0
+
+login_slim () {
+	if [ $LSELECTED -eq 1 ] ; then
+		return 0
+	fi
+	
+	_n "Install SLiM (simple login manager)? [y/N] "
+	INST_SLIM=$?
+	LSELECTED=$INST_SLIM
+}
+
+login_lightdm () {
+	if [ $LSELECTED -eq 1 ] ; then
+		return 0
+	fi
+	
+	_n "Install LightDM login manager instead? [y/N] "
+	INST_SLIM=$?
+	LSELECTED=$INST_SLIM
+}
+
+login_nodm () {
+	if [ $LSELECTED -eq 1 ] ; then
+		return 0
+	fi
+	
+	printf "[ ${CY}WARN${NC} ]  No login manager selected!\n"
+}
+
+## DIALOG
+
+dia_login_select () {
+	DIA_OPTIONS="1 SLiM
+				2 LightDM
+				3 none/terminal"
+	
+	_dm "Please select a login manager:" "Login Manager"
+	case $DIA_RESULT in
+		1) INST_SLIM=1 ;;
+		2) INST_LIGHTDM=1 ;;
+		3) ;;
+		*) _abort;;
+	esac
+}
+
+## RUN
+
+if [ $DIA_ON -eq 1 ] ; then
+	dia_login_select
+else
+	login_slim
+	login_lightdm
+	login_nodm
+fi
+
+
 # ------------------------------------ confirmation
 
 ## CLI
@@ -653,8 +712,6 @@ lastchance () {
 
 ## DIALOG
 
-DIA_BACKTITLE="Confirmation"
-
 dia_lastchance () {
 	DIA_MSG_HEIGHT=15
 	
@@ -662,6 +719,7 @@ dia_lastchance () {
 	SEL_KBD="Keyboard: $KBD_LANG"
 	SEL_VIDEO="Video driver:"
 	SEL_XSOFT="X Software:"
+	SEL_LOGIN="Login manager:"
 	
 	if [ ! -z $KBD_VAR ] ; then
 		SEL_KBD="Keyboard: $KBD_LANG (variant: $KBD_VAR)"
@@ -684,30 +742,36 @@ dia_lastchance () {
 	elif [ $INST_VIDEO_INTEL_LEGACY -eq 1 ] ; then
 		SEL_VIDEO="$SEL_VIDEO INTEL (legacy)"
 	fi
+	
+	if [ $INST_SLIM -eq 1 ] ; then
+		SEL_LOGIN="$SEL_LOGIN SLiM"
+	elif [ $INST_LIGHTDM -eq 1 ] ; then
+		SEL_LOGIN="$SEL_LOGIN LightDM"
+	fi
 
 	if [ $INST_Firefox -eq 1 ] ; then
-		SEL_XSOFT="${SEL_XSOFT} Firefox"
+		SEL_XSOFT="$SEL_XSOFT Firefox"
 	fi
 	if [ $INST_Chromium -eq 1 ] ; then
-		SEL_XSOFT="${SEL_XSOFT} Chromium"
+		SEL_XSOFT="$SEL_XSOFT Chromium"
 	fi
 	if [ $INST_Thunderbird -eq 1 ] ; then
-		SEL_XSOFT="${SEL_XSOFT} Thunderbird"
+		SEL_XSOFT="$SEL_XSOFT Thunderbird"
 	fi
 	if [ $INST_Office -eq 1 ] ; then
-		SEL_XSOFT="${SEL_XSOFT} LibreOffice SANE CUPS"
+		SEL_XSOFT="$SEL_XSOFT LibreOffice SANE CUPS"
 	fi
 	if [ $INST_VLC -eq 1 ] ; then
-		SEL_XSOFT="${SEL_XSOFT} VLC"
+		SEL_XSOFT="$SEL_XSOFT VLC"
 	fi
 	if [ $INST_CPP -eq 1 ] ; then
-		SEL_XSOFT="${SEL_XSOFT} CodeLite C++"
+		SEL_XSOFT="$SEL_XSOFT CodeLite C++"
 	fi
 	if [ $INST_Java -eq 1 ] ; then
-		SEL_XSOFT="${SEL_XSOFT} Netbeans Java"
+		SEL_XSOFT="$SEL_XSOFT Netbeans Java"
 	fi
 	
-	_dn "Please confirm your selection:\n\n${SEL_MIRROR}\n${SEL_KBD}\n${SEL_VIDEO}\n\n${SEL_XSOFT}\n"
+	_dn "Please confirm your selection:\n\n${SEL_MIRROR}\n${SEL_KBD}\n${SEL_VIDEO}\n${SEL_LOGIN}\n\n${SEL_XSOFT}\n" "Confirmation"
 	if [ $? -eq 0 ] ; then
 		_abort
 	fi
@@ -802,8 +866,6 @@ s_user () {
 
 ## DIALOG
 
-DIA_BACKTITLE="User accounts"
-
 dia_s_user () {
 	DIA_OPTIONS="Username: 1 1 username 1 11 15 0
 	Password: 2 1 pass1234 2 11 15 0
@@ -811,14 +873,14 @@ dia_s_user () {
 	GID: 4 1 auto 4 11 15 0
 	HomeDir: 5 1 auto 5 11 15 0"
 	
-	_df "Enter data for a new user. You can leave UID, GID and HOMEDIR (/home/...) on auto if you wish to use the defaults."
+	_df "Enter data for a new user. You can leave UID, GID and HOMEDIR (/home/...) on auto if you wish to use the defaults." "User Accounts"
 	dia_account $DIA_RESULT
 }
 
 # $1 username $2 password $3 uid $4 gid $5 home
 dia_account () {
 	if [ "$#" -ne 5 ] ; then
-		_dn "Input error. Try again?"
+		_dn "Input error. Try again?" "User Accounts"
 		if [ $? -eq 1 ] ; then
 			dia_s_user
 			return 0
@@ -828,9 +890,9 @@ dia_account () {
 	fi
 	
 	if [ "$5" = "auto" ] ; then
-		echo "$2" | pw user add -n "$1" -G "$USERGROUPS" -m -h 0
+		echo "$2" | pw user add -n "$1" -c "$1" -G "$USERGROUPS" -m -h 0
 		if [ ! -d "/home/$1" ] ; then
-			_dn "User account creation failed. Try again?"
+			_dn "User account creation failed. Try again?" "User Accounts"
 			if [ $? -eq 1 ] ; then
 				dia_s_user
 				return 0
@@ -842,7 +904,7 @@ dia_account () {
 	else
 		echo "$2" | pw user add -n "$1" -G "$USERGROUPS" -m -d "$5" -h 0
 		if [ ! -d "$5" ] ; then
-			_dn "User account creation failed. Try again?"
+			_dn "User account creation failed. Try again?" "User Accounts"
 			if [ $? -eq 1 ] ; then
 				dia_s_user
 				return 0
@@ -855,7 +917,7 @@ dia_account () {
 	if [ "$3" != "auto" ] ; then
 		pw user mod -n "$1" -u "$3"
 		if [ ! $? ] ; then
-			_dn "UID modification failed. Try again?"
+			_dn "UID modification failed. Try again?" "User Accounts"
 			if [ $? -eq 1 ] ; then
 				dia_s_user
 				return 0
@@ -868,7 +930,7 @@ dia_account () {
 	if [ "$4" != "auto" ] ; then
 		pw user mod -n "$1" -g "$4"
 		if [ ! $? ] ; then
-			_dn "GID modification failed. Try again?"
+			_dn "GID modification failed. Try again?" "User Accounts"
 			if [ $? -eq 1 ] ; then
 				dia_s_user
 				return 0
@@ -878,7 +940,7 @@ dia_account () {
 		fi
 	fi
 	
-	_dn "User account creation was successful. Create another user?"
+	_dn "User account creation was successful. Create another user?" "User Accounts"
 	if [ $? -eq 1 ] ; then
 		dia_s_user
 		return 0
@@ -893,7 +955,7 @@ if [ $DIA_ON -eq 1 ] ; then
 		$USERGROUPS="${USERGROUPS},cups"
 	fi
 
-	_dn "Do you want to add new users to the system?"
+	_dn "Do you want to add new users to the system?" "User Accounts"
 	if [ $? -eq 1 ] ; then
 		s_skel
 		s_tmpfs
@@ -1000,11 +1062,8 @@ s_procfs () {
 }
 
 i_slim () {
-	# future alternative?
-	# pkg install lightdm lightdm-gtk-greeter lightdm-gtk-greeter-settings
-	# sysrc lightdm_enable=YES
-	
 	_pih slim "SLiM"
+	sysrc slim_enable="YES"
 	
 	cd /tmp
 	if fetch --no-verify-peer ${REPO}config/10-keyboard.conf ; then
@@ -1032,18 +1091,30 @@ t_slim () {
 	echo ""
 }
 
+i_lightdm () {
+	_pih lightdm "LightDM"
+	_pi lightdm-gtk-greeter
+	_pi lightdm-gtk-greeter-settings
+	sysrc lightdm_enable=YES
+}
+
+t_lightdm () {
+	cd /tmp
+	if fetch --no-verify-peer ${REPO}config/lightdm-gtk-greeter.conf ; then
+		chmod 775 ./lightdm-gtk-greeter.conf
+		
+		mkdir -p /usr/local/etc/lightdm
+		chmod 755 /usr/local/etc/lightdm
+		mv ./lightdm-gtk-greeter.conf /usr/local/etc/lightdm/lightdm-gtk-greeter.conf
+	fi
+}
+
 s_rcconf () {
 	printf "[ ${CG}NOTE${NC} ]  Configuring rc.conf\n\n"
 	
-	cp /etc/rc.conf /etc/rc.conf.bak
 	sysrc moused_enable="NO" # fix mouse scrolling conflict in MATE
 	sysrc dbus_enable="YES"
-	sysrc slim_enable="YES"
 	sysrc hald_enable="YES"	# DEPRECATED
-	
-	if [ "$INST_Office" -eq 1 ] ; then
-		sysrc cupsd_enable="YES"
-	fi
 	
 	echo ""
 }
@@ -1090,10 +1161,16 @@ if [ "$INST_MATE" -eq 1 ] ; then
 	clear
 	i_mate		# install MATE & related pkgs
 	s_procfs	# setup procfs
-	i_slim		# install SLiM pkg
-	t_slim		# theme SLiM
 	s_rcconf	# modifying rc.conf
 	t_mate		# theme mate
+fi
+
+if [ "$INST_SLIM" -eq 1 ] ; then
+	i_slim		# install SLiM pkg
+	t_slim		# theme SLiM
+elif [ "$INST_LIGHTDM" -eq 1 ] ; then
+	i_lightdm	# install lightdm+greeter+settings
+	t_lightdm	# theme/greeter settings lightdm
 fi
 
 # ------------------------------------ user selected software
@@ -1143,6 +1220,8 @@ i_office () {
 		_pi cups
 		_pi cups-pdf
 		_pi gutenprint
+		
+		sysrc cupsd_enable="YES"
 	fi
 }
 i_office
