@@ -62,6 +62,7 @@ The layout can be changed later at any point.
 - almost all config files are pulled out of the script and have been put on github as separate files, which will be downloaded as needed
 
 ## Changelog
+- 2021-04-22: options for SLiM and LightDM, fix for user name (pw add -c)
 - 2021-03-10: bug fixes, Mint-Y dark themes, new features: keyboard layout/variant selection, dialog, amd, intel, switch to FreeBSD 13.0-rc1
 - 2020-05-02: refactoring, printf, new feature: tmpfs directory
 - 2020-03-27: DarkMate 12.1 release, switch to FreeBSD 12.1
