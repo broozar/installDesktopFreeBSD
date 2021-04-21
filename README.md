@@ -16,6 +16,9 @@ $ sh darkMate13
 ```
 4. Follow the instructions on screen. If you made a mistake, use CTRL+C to abort, then simply run the script again.
 
+### Installation tutorial on YouTube
+You can find a step-by-step guide on YouTube which covers creating a FreeBSD installation image, installing the OS, and installing DarkMate: https://youtu.be/1jIoSwwz2ak
+
 ## Advanced options
 You can launch the script with additional parmeters:
 
