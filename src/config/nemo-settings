@@ -1,0 +1,27 @@
+[org/nemo/desktop]
+desktop-layout='true::true'
+network-icon-visible=false
+volumes-visible=true
+
+[org/nemo/list-view]
+default-column-order=['name', 'size', 'type', 'date_modified', 'date_created_with_time', 'date_accessed', 'date_created', 'detailed_type', 'group', 'where', 'mime_type', 'date_modified_with_time', 'octal_permissions', 'owner', 'permissions']
+default-visible-columns=['name', 'size', 'type', 'date_modified', 'group', 'owner', 'permissions']
+
+[org/nemo/preferences]
+default-folder-viewer='list-view'
+ignore-view-metadata=true
+show-compact-view-icon-toolbar=false
+show-computer-icon-toolbar=true
+show-edit-icon-toolbar=false
+show-hidden-files=false
+show-home-icon-toolbar=true
+show-icon-view-icon-toolbar=false
+show-list-view-icon-toolbar=false
+show-new-folder-icon-toolbar=true
+show-open-in-terminal-toolbar=true
+show-reload-icon-toolbar=true
+
+[org/nemo/window-state]
+maximized=false
+sidebar-bookmark-breakpoint=0
+start-with-sidebar=true

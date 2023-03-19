@@ -1,0 +1,5 @@
+[org/gnome/terminal/legacy/profiles:/:#####TERM]
+default-size-columns=160
+default-size-rows=48
+font='Hack 12'
+use-system-font=false

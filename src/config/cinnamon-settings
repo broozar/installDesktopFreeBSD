@@ -1,0 +1,71 @@
+[org/cinnamon]
+desktop-effects-close-effect='traditional'
+desktop-effects-close-time=120
+desktop-effects-close-transition='easeOutQuad'
+desktop-effects-map-effect='traditional'
+desktop-effects-map-time=100
+desktop-effects-map-transition='easeOutQuad'
+desktop-effects-maximize-effect='none'
+desktop-effects-maximize-time=100
+desktop-effects-maximize-transition='easeInExpo'
+desktop-effects-minimize-effect='traditional'
+desktop-effects-minimize-time=160
+desktop-effects-minimize-transition='easeInQuad'
+desktop-effects-tile-effect='none'
+desktop-effects-tile-time=100
+desktop-effects-tile-transition='easeInQuad'
+desktop-effects-unmaximize-effect='none'
+desktop-effects-unmaximize-time=100
+desktop-effects-unmaximize-transition='easeNone'
+enabled-applets=['panel1:left:0:menu@cinnamon.org:0', 'panel1:left:2:grouped-window-list@cinnamon.org:2', 'panel1:right:1:systray@cinnamon.org:3', 'panel1:right:2:xapp-status@cinnamon.org:4', 'panel1:right:3:notifications@cinnamon.org:5', 'panel1:right:4:printers@cinnamon.org:6', 'panel1:right:5:removable-drives@cinnamon.org:7', 'panel1:right:6:keyboard@cinnamon.org:8', 'panel1:right:7:favorites@cinnamon.org:9', 'panel1:right:8:network@cinnamon.org:10', 'panel1:right:9:sound@cinnamon.org:11', 'panel1:right:10:power@cinnamon.org:12', 'panel1:right:11:calendar@cinnamon.org:13', 'panel1:right:0:workspace-switcher@cinnamon.org:14']
+hotcorner-layout=['expo:true:400', 'scale:false:0', 'scale:false:0', 'scale:true:300']
+next-applet-id=15
+panel-zone-symbolic-icon-sizes='[{"panelId": 1, "left": 28, "center": 28, "right": 16}]'
+panels-autohide=['1:intel']
+panels-height=['1:40']
+workspace-expo-view-as-grid=true
+
+[org/cinnamon/desktop/background]
+picture-uri='file:///usr/local/share/backgrounds/freebsdesktop/centerFlat_grey-1080.png'
+
+[org/cinnamon/desktop/background/slideshow]
+delay=15
+image-source='directory:///usr/local/share/backgrounds/freebsdesktop'
+
+[org/cinnamon/desktop/interface]
+cursor-blink-time=1200
+cursor-theme='Adwaita'
+gtk-theme='Mint-Y-Dark-Aqua'
+icon-theme='Papirus-Dark'
+
+[org/cinnamon/desktop/keybindings/media-keys]
+terminal=['<Super>t']
+www=['<Super>b']
+
+[org/cinnamon/desktop/keybindings/wm]
+minimize=['<Super>Down']
+push-tile-down=@as []
+push-tile-up=@as []
+toggle-maximized=['<Super>Up']
+
+[org/cinnamon/desktop/screensaver]
+lock-enabled=false
+
+[org/cinnamon/desktop/session]
+idle-delay=uint32 600
+
+[org/cinnamon/desktop/sound]
+event-sounds=false
+
+[org/cinnamon/desktop/wm/preferences]
+num-workspaces=2
+theme='Arc-Dark-Grey'
+workspace-names=@as []
+
+[org/cinnamon/settings-daemon/peripherals/keyboard]
+delay=uint32 500
+numlock-state='on'
+repeat-interval=uint32 30
+
+[org/cinnamon/theme]
+name='Mint-Y-Dark-Aqua'

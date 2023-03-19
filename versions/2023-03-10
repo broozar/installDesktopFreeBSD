@@ -1,0 +1,7 @@
+renamed to FreeBSDesktop
+redesigned file structure (no more 1 single monster script)
+dialog-only
+nvidia 470 added
+new cinnamon desktop
+select from multiple desktop environments (Mate and Cinnamon for now)
+self-contained RUN package

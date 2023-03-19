@@ -1,0 +1,13 @@
+#!/bin/sh
+
+LOC1="/tmp/cinnamon-settings.txt"
+LOC2="/tmp/nemo-settings.txt"
+
+# dumps settings
+dconf dump /org/cinnamon/ > "$LOC1"
+dconf dump /org/nemo/ > "$LOC2"
+cp ~/.cinnamon /tmp/dot.cinnamon
+
+printf "Cinnamon settings have been dumped to $LOC1\n"
+printf "Nemo settings have been dumped to $LOC2\n"
+printf "Cinnamon config files have been copied to /tmp\n"
