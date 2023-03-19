@@ -36,10 +36,10 @@ Custom wallpapers and icons are located at
 
 ## Screenshots
 ### Cinnamon
-![PIC Desktop](Screenshots/cinnamon-13a.png)
+![PIC Desktop](screenshots/cinnamon-13a.png)
 ### Mate
-![PIC Desktop](Screenshots/mate-12a.png)
-![PIC Desktop](Screenshots/mate-12c.png)
+![PIC Desktop](screenshots/mate-12a.png)
+![PIC Desktop](screenshots/mate-12c.png)
 
 ## Keyboard codes without dialog
 If you do not use the new dialog UI, the script will ask you to define your keyboard layout. If you go with the defaults, you will be getting the standard US layout. A full list of language and variant codes can be found here: https://unix.stackexchange.com/questions/43976/list-all-valid-kbd-layouts-variants-and-toggle-options-to-use-with-setxkbmap
@@ -53,7 +53,7 @@ The layout can be changed later at any point.
 
 ## Differences to previous version
 - renamed to FreeBSDesktop
-- built and distributed as self-contained *makeself* package
+- built and distributed as self-contained package - but *makeself* is bugged, better use TAR
 - redesigned file structure (no more 1 single monster script)
 - supports multiple desktop environments (Mate and Cinnamon for now)
 - dialog-only, no more pure CLI override
