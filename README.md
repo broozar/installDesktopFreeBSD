@@ -62,7 +62,7 @@ The layout can be changed later at any point.
 - new icons
 - new CLI app selection (FAMP and Emacs for now)
 
-## Changelog
+## Release log
 - 2023-03-10: completely refactured, modular design; Cinnamon; CLI apps; distribution scripts
 - 2021-04-22: options for SLiM and LightDM, fix for user name (pw add -c)
 - 2021-03-10: bug fixes, Mint-Y dark themes, new features: keyboard layout/variant selection, dialog, amd, intel, switch to FreeBSD 13.0-rc1
