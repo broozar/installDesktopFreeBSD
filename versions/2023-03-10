@@ -1,7 +1,9 @@
 renamed to FreeBSDesktop
+built and distributed as self-contained package - but makeself is bugged, better use TAR
 redesigned file structure (no more 1 single monster script)
-dialog-only
+supports multiple desktop environments (Mate and Cinnamon for now)
+dialog-only, no more pure CLI override
 nvidia 470 added
 new cinnamon desktop
-select from multiple desktop environments (Mate and Cinnamon for now)
-self-contained RUN package
+new icons
+new CLI app selection (FAMP and Emacs for now)
